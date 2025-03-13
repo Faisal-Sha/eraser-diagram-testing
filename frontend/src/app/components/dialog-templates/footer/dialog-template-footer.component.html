@@ -1,0 +1,12 @@
+<div class="flex w-full justify-content-end mt-3 gap-2">
+  @if (dialogConfig.data?.buttons?.cancel) {
+    <p-button type="button" severity="secondary"
+      [label]="dialogConfig.data.buttons.cancel" icon="pi pi-times"
+      (click)="cancel()"></p-button>
+  }
+  @if (dialogConfig.data?.buttons?.confirm) {
+    <p-button [class]="getButtonClass()" type="button" severity="primary"
+      [label]="dialogConfig.data.buttons.confirm" [icon]="getIconClass()"
+      (click)="submit()"></p-button>
+  }
+</div>

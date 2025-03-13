@@ -1,0 +1,15 @@
+:host ::ng-deep {
+  .p-inplace-display {
+    display: block;
+    width: 100%;
+  }
+}
+
+.dropdown-item {
+  display: block;
+  line-height: 16px;
+}
+
+.whitespace-no-wrap {
+  white-space: nowrap;
+}

@@ -1,0 +1,6 @@
+<div>
+  <p class="mt-0">{{ dialogConfig.data?.message }}</p>
+  <form>
+    <input class="w-full" type="text" [placeholder]="dialogConfig.data.placeholder" [(ngModel)]="dialogConfig.data.value" name="input" pInputText>
+  </form>
+</div>

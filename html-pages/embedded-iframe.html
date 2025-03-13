@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            iframe{ 
+                width: 100%;
+            }
+        </style>
+        <script>
+            window.addEventListener('message', function(event) {
+                let tool = document.getElementById('tool');
+                tool.style.height = event.data.height + "px";
+            }, false);
+        </script>
+    </head>
+    <body>
+        <iframe id="tool" src="http://localhost:4200"></iframe>
+    </body>
+</html>

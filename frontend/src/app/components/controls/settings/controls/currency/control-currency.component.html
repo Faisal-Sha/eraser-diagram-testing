@@ -1,0 +1,21 @@
+@if (currency) {
+    <div class="flex flex-row gap-2 mt-2">
+        <p-floatLabel class="col-6">
+            <input id="currency-symbol" class="w-full" type="text" pInputText [(ngModel)]="currency.symbol" (ngModelChange)="emitChange()" />
+            <label for="currency-symbol">{{ 'placeholder.symbol' | i18next }}</label>
+        </p-floatLabel>
+        <p-floatLabel class="col-6">
+            <p-inputNumber
+              id="currency-rate"
+              class="w-full"
+              [(ngModel)]="currency.exchangeRate"
+              (ngModelChange)="emitChange()"
+              mode="decimal"
+              locale="de-DE"
+              [minFractionDigits]="2"
+              [maxFractionDigits]="2"
+            ></p-inputNumber>
+            <label for="currency-rate">{{ 'placeholder.rate' | i18next }}</label>
+        </p-floatLabel>
+    </div>
+}

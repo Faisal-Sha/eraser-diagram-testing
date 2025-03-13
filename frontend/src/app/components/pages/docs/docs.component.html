@@ -1,0 +1,11 @@
+<div>
+    <button (click)="goBackHome()" class="back-button">Back to Home</button>
+    <label for="docSelector">Select Documentation:</label>
+    <select id="docSelector" (change)="updateDocs($event)">
+      <option value="assets/docs/frontend/index.html">Frontend Docs</option>
+      <option value="assets/docs/backend/index.html">Backend Docs</option>
+    </select>
+</div>
+  
+<iframe [src]="docsUrl | safeUrl" width="100%" height="1000px"></iframe>
+  

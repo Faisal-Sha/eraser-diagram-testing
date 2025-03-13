@@ -1,0 +1,784 @@
+{
+  "pipefittings": {
+    "group": {
+      "typeId": {
+        "pipe": "Pipe",
+        "elbow": "Elbow",
+        "tee": "Tee",
+        "reduction": "Reduction",
+        "cap": "Cap",
+        "flange-pn10": "Flange PN10",
+        "flange-pn16": "Flange PN16",
+        "flange-pn25": "Flange PN25",
+        "flange-pn40": "Flange PN40",
+        "Custom": "Custom Components"
+      },
+      "material": {
+        "N": "Carbon Steel",
+        "S": "Stainless Steel",
+        "Custom": "Custom Materials"
+      },
+      "dn1": {
+        "Custom": "Custom Nominal Sizes",
+        "Default": "Standard"
+      },
+      "s1": {
+        "Custom": "Custom Wall Thicknesses",
+        "Default": "Standard"
+      },
+      "dn2": {
+        "Custom": "Custom Nominal Sizes",
+        "Default": "Standard"
+      },
+      "s2": {
+        "Custom": "Custom Wall Thicknesses",
+        "Default": "Standard"
+      }
+    },
+    "column": {
+      "price": {
+        "material": "Material",
+        "manufacturing": "Manufacturing",
+        "assembly": "Assembly",
+        "efford": "Manufact. & Assem."
+      },
+      "quantity": "Quantity",
+      "typeId": "Component",
+      "material": "Material",
+      "dn1": "DN1",
+      "dn2": "DN2",
+      "s1": "S1",
+      "s2": "S2",
+      "standard": "Standard"
+    },
+    "result": {
+      "subtotal": "Subtotal (net)",
+      "grandtotal": "Total (net)"
+    }
+  },
+  "components": {
+    "controls": {
+      "actions": {
+        "button": {
+          "add": "Add",
+          "quickmto": "Quick MTO"
+        },
+        "tooltip": {
+          "settings": "Settings",
+          "print": "Print",
+          "export": "Save local",
+          "import": "Import",
+          "reset": "Clear Entries",
+          "activated-unit-price-view-button": "Deactivate Unit Price View",
+          "deactivated-unit-price-view-button": "Activate Unit Price View"
+        },
+        "menu": {
+          "export": {
+            "title": "Save local as",
+            "json": "Backup File",
+            "csv": "CSV File"
+          },
+          "import": {
+            "title": "Import",
+            "json": "Backup File",
+            "csv": "CSV File"
+          },
+          "print": {
+            "title": "Print View",
+            "with-prices": "With Prices",
+            "without-prices": "Without Prices"
+          },
+          "add": {
+            "group": {
+              "title": "Add Entry",
+              "general": "Grouping",
+              "pipefittings": "Pipes",
+              "services": "Services"
+            }
+          }
+        },
+        "confirmation": {
+          "reset": {
+            "title": "Clear Entries",
+            "message": "Do you want to delete all entries?",
+            "accept": "Yes",
+            "reject": "No"
+          }
+        }
+      },
+      "calculation": {
+        "duplicate-name": "{{ name }} (Copy)",
+        "tooltip": {
+          "column": {
+            "material": "Component material price in {{ currencySymbol }}",
+            "manufacturing": "Component manufacturing cost in {{ currencySymbol }}",
+            "assembly": "Component assembly cost in {{ currencySymbol }}",
+            "efford": "Manufacturing & Assembly cost in {{ currencySymbol }}"
+          },
+          "duplicate": "Duplicate",
+          "remove": "Remove",
+          "info": "Information",
+          "unfinished-info": "The price is incomplete as not all entries are filled in.",
+          "efford-info": "Manufacturing and Assembly"
+        },
+        "button": {
+          "add-item": "Add part"
+        },
+        "cell": {
+          "placeholder": {
+            "quantity": "Quantity",
+            "typeId": "Select",
+            "material": "Select",
+            "dn1": "Select",
+            "dn2": "Select",
+            "s1": "Select",
+            "s2": "Select"
+          }
+        },
+        "disclaimer": {
+          "info": "We accept no liability for the calculated prices."
+        },
+        "price-calculation": {
+          "part-information-title": "Component Properties",
+          "information": {
+            "engify-id": "Engify ID",
+            "standard": "Standard",
+            "weight": "Weight"
+          },
+          "table-titles": {
+            "formulas": "Correction Factors",
+            "errors": "Error Messages",
+            "material-calculation": "Material Calculation",
+            "general-calculation": "Price Calculation",
+            "efford-mix-calculation": "Manufacturing & Assembly Calculation",
+            "efford-manufacturing-calculation": "Manufacturing Calculation",
+            "efford-assembly-calculation": "Assembly Calculation",
+            "overview": "Overview",
+            "values": "Value",
+            "quantity": "Qty.",
+            "step": "Operation",
+            "size": "Dimension",
+            "efford": "Duration",
+            "total": "Total",
+            "split-manufacturing": "Of which Manufacturing ({{ manufacturing }}%)",
+            "split-assembly": "Of which Assembly ({{ assembly }}%)",
+            "applied-formulas": "Applied Correction Factors",
+            "calculation-per-unit": "Calculation per Unit",
+            "no-formula-text": "No corrections are made.<br>You can enter your own prices under<br>Settings > Correction Factors."
+          },
+          "tooltips": {
+            "show-calculation": "Show Calculation",
+            "applied-formulas": "The following correction factors are applied in the given order and override the previous result."
+          },
+          "texts": {
+            "efford-mix": "The price is calculated by multiplying <span class=\"font-bold\">Duration ({{ efford }} hours)</span> and <span class=\"font-bold\">Mixed Hourly Rate ({{ price }})</span>.",
+            "efford-manufacturing": "The price is calculated by multiplying <span class=\"font-bold\">Duration ({{ efford }} hours)</span> and <span class=\"font-bold\">Manufacturing Hourly Rate ({{ price }})</span>.",
+            "efford-assembly": "The price is calculated by multiplying <span class=\"font-bold\">Duration ({{ efford }} hours)</span> and <span class=\"font-bold\">Assembly Hourly Rate ({{ price }})</span>."
+          },
+          "factors": {
+            "description": {
+              "UNIT_PRICE": "Unit Price [{{ currencySymbol }}/kg]",
+              "MATERIAL_SURCHARGE": "Material Surcharge",
+              "FORM_FACTOR": "Form Factor",
+              "WEIGHT": "Weight [kg/{{ unit }}]",
+              "QUANTITY": "Quantity",
+              "CUSTOM_MATERIAL_PRICE": "Configured Material Price"
+            },
+            "parameter": {
+              "UNIT_PRICE": "Unit Price",
+              "MATERIAL_SURCHARGE": "Material Surcharge",
+              "FORM_FACTOR": "Form Factor",
+              "CUSTOM_MATERIAL_PRICE": "Configured Material Price",
+              "QUANTITY": "Quantity",
+              "MENGE": "Quantity",
+              "D1": "D1",
+              "S1": "S1",
+              "D2": "D2",
+              "S2": "S2",
+              "GEWICHT": "Weight",
+              "WEIGHT": "Weight",
+              "PREIS_MATERIAL": "Previous Result",
+              "AUFWAND_STUNDEN": "Previous Result"
+            }
+          },
+          "steps": {
+            "description": {
+              "handlingPipe": "Pipe Handling",
+              "layingPipe": "Basic Installation",
+              "circularWeld": "Weld Circular Seam",
+              "fitting2End": "Basic Installation",
+              "fitting3End": "Basic Installation",
+              "circularWeld1": "Weld Seam 1",
+              "circularWeld2": "Weld Seam 2",
+              "flangedConnection": "Basic Installation",
+              "CUSTOM_EFFORD_HOURS": "Configured Effort"
+            },
+            "parameter": {
+              "PRICE_PER_HOUR": "Hourly Rate",
+              "DURATION": "Duration"
+            }
+          }
+        }
+      },
+      "metadata": {
+        "header": "Header Data",
+        "input": {
+          "address": "Address",
+          "author": "Author",
+          "date": "Date",
+          "version": "Version",
+          "project": "Project",
+          "description": "Project Description"
+        }
+      },
+      "quickfill": {
+        "title": "Quick MTO",
+        "button": {
+          "confirm": "Create Calculation",
+          "cancel": "Save and Close"
+        },
+        "accordion": {
+          "parts": {
+            "title": "Configuration (Sample Isometric)",
+            "info": "Define which components should be generated with which frequency. Use our presets or create your own.",
+            "preset": {
+              "title": "Presets",
+              "isbl": "ISBL – Inside battery limit (Core Plant Area)",
+              "osbl": "OSBL – Outside battery limit (Plant Surroundings)",
+              "menu": {
+                "add": "Add New"
+              },
+              "button": {
+                "edit": "Edit",
+                "remove": "Remove",
+                "duplicate": "Duplicate"
+              },
+              "dialog": {
+                "new": {
+                  "title": "Add New Preset",
+                  "placeholder": "Preset Name",
+                  "initial-value": "New Preset",
+                  "message": "Name your preset",
+                  "button": {
+                    "confirm": "Add",
+                    "cancel": "Back"
+                  }
+                },
+                "rename": {
+                  "title": "Rename Preset",
+                  "placeholder": "Preset Name",
+                  "message": "Enter the new name for the preset",
+                  "button": {
+                    "confirm": "Rename",
+                    "cancel": "Back"
+                  }
+                },
+                "duplicate": {
+                  "title": "Duplicate Preset",
+                  "placeholder": "Preset Name",
+                  "message": "Name the copy of the preset",
+                  "initial-value": "{{ name }} (Copy)",
+                  "button": {
+                    "confirm": "Add",
+                    "cancel": "Back"
+                  }
+                },
+                "delete": {
+                  "title": "Delete Preset",
+                  "message": "Do you really want to delete the preset?",
+                  "button": {
+                    "confirm": "Delete",
+                    "cancel": "Cancel"
+                  }
+                }
+              }
+            },
+            "tooltip": {
+              "deactivate": "Deactivate",
+              "activate": "Activate",
+              "remove": "Remove Component"
+            },
+            "input": {
+              "pipefitting": "Component",
+              "material": "Material",
+              "quantity": "Quantity"
+            },
+            "button": {
+              "add": "Add"
+            },
+            "table": {
+              "item": "Generated Components",
+              "material": "Material",
+              "length": "per 10m Total Length"
+            },
+            "validation": {
+              "invalid-pipefitting": "Required Field",
+              "invalid-material": "Required Field",
+              "invalid-quantity": "Required Field"
+            }
+          },
+          "groups": {
+            "title": "Pipeline",
+            "info": "Specify your planned pipeline here.",
+            "button": {
+              "add": "Add Pipeline"
+            },
+            "tooltip": {
+              "remove": "Remove Group",
+              "deactivate": "Deactivate",
+              "activate": "Activate"
+            },
+            "placeholder": {
+              "name": "Pipeline Name"
+            },
+            "input": {
+              "length": {
+                "title": "Total Length",
+                "placeholder": "in Meters"
+              },
+              "dn": {
+                "title": "Main Nominal Diameter",
+                "placeholder": "DN"
+              },
+              "s": {
+                "title": "Wall Thickness",
+                "placeholder": "in mm"
+              },
+              "material": {
+                "title": "Material",
+                "placeholder": "Material"
+              }
+            },
+            "validation": {
+              "invalid-config-name": "Please name the pipeline",
+              "invalid-config-length": "Required Field",
+              "invalid-config-dn": "Required Field",
+              "invalid-config-s": "Required Field",
+              "invalid-config-material": "Required Field"
+            }
+          }
+        }
+      },
+      "settings": {
+        "title": "Settings",
+        "button": {
+          "confirm": "Save",
+          "cancel": "Cancel"
+        },
+        "tabs": {
+          "general": "General",
+          "calculation": "Hourly Rates",
+          "items-title": "Components",
+          "override-items": "Override",
+          "service-items": "Services",
+          "add-items": "Add",
+          "formulas": "Correction Factors"
+        },
+        "general": {
+          "language": "Language",
+          "logo": {
+            "info": "Upload your own logo for the print view here",
+            "header": "Logo",
+            "upload-button": "Upload Logo",
+            "reset-button": "Reset",
+            "dialog": {
+              "upload-error": {
+                "title": "Upload Error",
+                "message": "The image is too large. Please select an image with a maximum size of 1 MB.",
+                "button": {
+                  "accept": "Close"
+                }
+              }
+            }
+          },
+          "currency": {
+            "title": "Currency",
+            "info": "Select the currency for the price calculation",
+            "description": "Use your own currency for the price calculation. The exchange rate is used to convert the material prices we suggest."
+          }
+        },
+        "hourly-rates": {
+          "panel": {
+            "split": {
+              "title": "Split into Manufacturing & Assembly",
+              "manufacturing": "Manufacturing Share",
+              "assembly": "Assembly Share",
+              "tooltip": {
+                "info": "Here you can split the tables into manufacturing and assembly",
+                "activate": "Activate Split",
+                "deactivate": "Deactivate Split"
+              }
+            },
+            "rates": {
+              "title": {
+                "mixed": "Mixed Hourly Rate",
+                "splitted": "Hourly Rates"
+              },
+              "tooltip": {
+                "mixed": "Enter your mixed hourly rate for manufacturing and assembly here",
+                "splitted": "Enter your hourly rate for manufacturing and assembly here"
+              },
+              "input": {
+                "mixed": "Mixed Hourly Rate",
+                "manufacturing": "Manufacturing Hourly Rate",
+                "assembly": "Assembly Hourly Rate"
+              }
+            }
+          },
+          "mixed-hourly-rate": {
+            "info": "Enter your mixed hourly rate for manufacturing and assembly here",
+            "header": "Mixed Hourly Rate"
+          },
+          "hourly-manufacturing-rate": {
+            "info": "Enter your hourly rate for manufacturing here",
+            "header": "Manufacturing Hourly Rate"
+          },
+          "hourly-assembly-rate": {
+            "info": "Enter your hourly rate for assembly services here",
+            "header": "Assembly Hourly Rate"
+          },
+          "manufacturing-assembly": {
+            "activate": "Activate",
+            "deactivate": "Deactivate",
+            "info": "Here you can split the tables into manufacturing and assembly",
+            "header": "Split into Manufacturing & Assembly",
+            "manufacturing": "Manufacturing",
+            "assembly": "Assembly"
+          },
+          "validation": {
+            "mixed-hourly-rate": {
+              "required": "Please enter a mixed hourly rate",
+              "invalid": "Please enter a valid number"
+            },
+            "hourly-manufacturing-rate": {
+              "required": "Please enter an hourly manufacturing rate",
+              "invalid": "Please enter a valid number"
+            },
+            "hourly-assembly-rate": {
+              "required": "Please enter an hourly assembly rate",
+              "invalid": "Please enter a valid number"
+            }
+          }
+        },
+        "controls": {
+          "custom-item-list": {
+            "description": {},
+            "table-title": {
+              "override": "Overview of Overridden Components",
+              "custom": "Overview of Added Components"
+            },
+            "tooltip": {
+              "edit": "Edit",
+              "duplicate": "Duplicate",
+              "remove": "Remove",
+              "activate": "Activate",
+              "deactivate": "Deactivate",
+              "override": "Here you can override the existing standard components with your own prices.",
+              "custom": "Here you can add new components with various nominal sizes. These will then be available in the component selection."
+            },
+            "button": {
+              "add": "Add"
+            },
+            "confirmation": {
+              "remove": {
+                "title": "Do you want to delete the component?",
+                "message": "This action cannot be undone.",
+                "accept": "Yes",
+                "reject": "No"
+              },
+              "remove-disabled": {
+                "title": "The component cannot be deleted",
+                "message": "The component is used in the calculation or in a preset of the Quick MTO and therefore cannot be deleted.",
+                "accept": "Close"
+              }
+            }
+          },
+          "custom-item-edit": {
+            "title": {
+              "override": {
+                "edit": "Edit Overridden Component",
+                "create": "Override Component"
+              },
+              "custom": {
+                "edit": "Edit Custom Component",
+                "create": "Add New Component"
+              }
+            },
+            "duplicate-name": "{{ name }} (Copy)",
+            "button": {
+              "confirm": "Save",
+              "cancel": "Cancel",
+              "add": "Add Nominal Size"
+            },
+            "input": {
+              "select": "Select",
+              "units": "Unit",
+              "name": "Component Name"
+            },
+            "conditions": {
+              "title": "Prices",
+              "weight": "Weight [kg]",
+              "material": "Material [{{ currencySymbol }}]",
+              "efford": "Manufacturing & Assembly [h]",
+              "input": {
+                "weight": "Weight",
+                "material": "Material",
+                "efford": "Manufacturing & Assembly"
+              },
+              "tooltip": {
+                "info": "Add your individual prices for the component specifications here.",
+                "remove": "Remove",
+                "duplicate": "Duplicate"
+              },
+              "button": {
+                "add": "Add Nominal Size"
+              }
+            }
+          },
+          "formula-list": {
+            "table-title": "Overview of Correction Factors",
+            "duplicate-name": "{{ name }} (Copy)",
+            "tooltip": {
+              "info": "Add your own correction factors for components that meet the defined conditions, and adjust prices for multiple components simultaneously.",
+              "edit": "Edit",
+              "duplicate": "Duplicate",
+              "remove": "Remove",
+              "activate": "Activate",
+              "deactivate": "Deactivate"
+            },
+            "button": {
+              "add": "Add"
+            },
+            "confirmation": {
+              "remove": {
+                "title": "Do you want to delete the correction factor?",
+                "message": "This action cannot be undone.",
+                "accept": "Yes",
+                "reject": "No"
+              }
+            }
+          },
+          "formula-edit": {
+            "title": {
+              "create": "Create Correction Factor",
+              "edit": "Edit Correction Factor"
+            },
+            "button": {
+              "confirm": "Save",
+              "cancel": "Cancel"
+            },
+            "default": {
+              "name": "New Correction Factor"
+            },
+            "input": {
+              "name": "Correction Factor Name"
+            },
+            "tooltip": {
+              "activate": "Activate",
+              "deactivate": "Deactivate"
+            },
+            "validation": {
+              "name-required": "Please enter a name for the correction factor"
+            },
+            "panel": {
+              "conditions": {
+                "title": "Conditions",
+                "tooltip": {
+                  "info": "Specify the conditions under which the calculations below should be applied.",
+                  "remove": "Remove"
+                },
+                "button": {
+                  "add": "Add Condition"
+                },
+                "table": {
+                  "option": "Option",
+                  "operation": "Operation",
+                  "value": "Value"
+                },
+                "placeholder": {
+                  "option": "Select Option",
+                  "operation": "Select Operation",
+                  "value": "Enter Value"
+                },
+                "options": {
+                  "quantity": "Quantity",
+                  "type-id": "Component",
+                  "dn1": "DN1",
+                  "dn2": "DN2",
+                  "s1": "S1",
+                  "s2": "S2",
+                  "material": "Material",
+                  "weight": "Weight"
+                },
+                "operations": {
+                  "eq": "Equal",
+                  "neq": "Not Equal",
+                  "lt": "Less Than",
+                  "lte": "Less Than or Equal",
+                  "gt": "Greater Than",
+                  "gte": "Greater Than or Equal"
+                },
+                "validation": {
+                  "conditions-invalid": "Please fill out all fields.",
+                  "conditions-overlapping": "Condition cannot be uniquely assigned. Please check for overlaps and duplicates.",
+                  "conditions-minimum": "Please add at least one condition."
+                }
+              },
+              "calculations": {
+                "title": "Calculations",
+                "tooltip": {
+                  "info": "Define your own calculations for price determination and use the available parameters.",
+                  "remove": "Remove"
+                },
+                "labels": {
+                  "material": "Calculation formula for material price [{{ currencySymbol }}]",
+                  "efford": "Calculation formula for manufacturing and assembly effort [h]",
+                  "efford-tooltip": "The result will automatically be multiplied by the set hourly rate"
+                },
+                "placeholder": {
+                  "material": "No Correction",
+                  "efford": "No Correction"
+                },
+                "validation": {
+                  "formula-invalid": "The calculation formula is invalid"
+                },
+                "info": {
+                  "title": "Parameter Formula Calculation",
+                  "label": {
+                    "math-symbols": "+ - * / ( )",
+                    "quantity": "QUANTITY",
+                    "d": "D1 / D2",
+                    "s": "S1 / S2",
+                    "weight": "WEIGHT",
+                    "efford": "EFFORT_HOURS",
+                    "material": "MATERIAL_PRICE"
+                  },
+                  "value": {
+                    "math-symbols": "These mathematical symbols can be used",
+                    "quantity": "The specified quantity of the entry in the corresponding units",
+                    "d": "The connection outside diameter of the component [mm]",
+                    "s": "The wall thickness of the component [mm]",
+                    "weight": "The component weight in kilograms",
+                    "efford": "The manufacturing and assembly effort of the component [h]",
+                    "material": "The material price of the component according to the <a href=\"https://engify.de/hilfe/materialpreise\" target=\"_blank\">unit price table</a> [{{ currencySymbol }}]"
+                  }
+                }
+              }
+            }
+          },
+          "currency": {
+            "placeholder": {
+              "symbol": "Currency Symbol",
+              "rate": "Exchange Rate in €"
+            }
+          }
+        }
+      }
+    },
+    "print-page": {
+      "title": "Calculation",
+      "version": "Version",
+      "standard": "Standard"
+    },
+    "printPage": {
+      "logo-subtext": "Your logo could be here",
+      "header": "Calculation",
+      "version": "Version",
+      "qty": "Quantity",
+      "pipe-fitting": "Component",
+      "standard": "Standard",
+      "dn1": "DN1",
+      "dn2": "DN2",
+      "thk1": "S1",
+      "thk2": "S2",
+      "material": "Material",
+      "installation": "Manufacturing &<br>Assembly [{{ currencySymbol }}]",
+      "manufacturing": "Manufacturing",
+      "assembly": "Assembly",
+      "delivery": "Material [{{ currencySymbol }}]",
+      "sub-total": "Subt.",
+      "grand-total": "Total",
+      "info": "We accept no liability for the calculated costs.",
+      "footer-text": "Calculated with a tool from Engify.de",
+      "page": "Page"
+    }
+  },
+  "services": {
+    "import-export": {
+      "dialog": {
+        "override": {
+          "title": "Import Backup",
+          "message": "Importing will overwrite all existing entries and settings.<br>Export a backup beforehand to restore the current state if needed.",
+          "button": {
+            "confirm": "Import",
+            "cancel": "Cancel"
+          }
+        }
+      }
+    }
+  },
+  "calendar": {
+    "day-name": {
+      "sunday": "Sunday",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday"
+    },
+    "day-name-short": {
+      "sunday": "Sun",
+      "monday": "Mon",
+      "tuesday": "Tue",
+      "wednesday": "Wed",
+      "thursday": "Thu",
+      "friday": "Fri",
+      "saturday": "Sat"
+    },
+    "day-name-min": {
+      "sunday": "Su",
+      "monday": "Mo",
+      "tuesday": "Tu",
+      "wednesday": "We",
+      "thursday": "Th",
+      "friday": "Fr",
+      "saturday": "Sa"
+    },
+    "month-name": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    },
+    "month-name-short": {
+      "january": "Jan",
+      "february": "Feb",
+      "march": "Mar",
+      "april": "Apr",
+      "may": "May",
+      "june": "Jun",
+      "july": "Jul",
+      "august": "Aug",
+      "september": "Sep",
+      "october": "Oct",
+      "november": "Nov",
+      "december": "Dec"
+    },
+    "today": "Today",
+    "weekHeader": "Wk"
+  },
+  "unit": {
+    "pcs": "pcs",
+    "m": "m",
+    "h": "h"
+  }
+}

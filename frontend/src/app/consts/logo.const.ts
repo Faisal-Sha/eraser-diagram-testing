@@ -1,0 +1,1 @@
+export const DEFAULT_LOGO = "/assets/images/engify-logo.png";

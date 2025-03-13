@@ -1,0 +1,53 @@
+.conditions-panel ::ng-deep {
+  .p-panel-content {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .p-datatable .p-datatable-thead > tr > th {
+    background-color: transparent;
+  }
+}
+.info-panel ::ng-deep {
+  .p-panel-content {
+    padding-top: 0;
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: 4px;
+    margin-bottom: 16px;
+  }
+  .p-panel-header {
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 16px;
+  }
+
+ .p-datatable-tbody > tr > td {
+    font-size: small;
+    padding: 12px;
+  }
+} 
+
+:host ::ng-deep {
+  p-accordion:not(.is-activated) .p-accordion-tab:not(.p-accordion-tab-active) .p-accordion-content {
+    height: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .p-inline-message {
+    display: flex;
+    margin-top: 0.25rem;
+    justify-content: start;
+  }
+
+  .conditions-panel td:not(:last-child) {
+    vertical-align: baseline;
+  }
+
+  td.error {
+    border: none;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}

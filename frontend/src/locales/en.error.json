@@ -1,0 +1,19 @@
+{
+  "formula": {
+    "apply-error-message": "Correction factor {{name}} could not be applied. {{message}}",
+    "missing-symbol": "Attribute {{name}} is missing in the entry.",
+    "missing-func": "Function {{name}} is not defined."
+  },
+  "custom-item": {
+    "duplicate-typeid": "The entry already exists.",
+    "duplicate-specification": "The specification is already in use.",
+    "required-attribute": "Required field",
+    "one-attirbute-required": "At least one attribute must be filled in."
+  },
+  "import": {
+    "failed": {
+      "title": "Import failed",
+      "message": "The import has failed. Please check the file and try again."
+    }
+  }
+}

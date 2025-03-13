@@ -1,0 +1,317 @@
+<form [formGroup]="form">
+  <div class="flex flex-row gap-4 mb-3 align-items-center">
+    <span class="block p-0 flex-grow-1">
+      <input
+        pInputText
+        class="p-inputtext w-full"
+        [placeholder]="'input.name' | i18next"
+        formControlName="name"
+      />
+      @if (form.hasError('required', 'name')) {
+        <p-message
+          @fadeInOut
+          severity="error"
+          [text]="'validation.name-required' | i18next"
+        ></p-message>
+      }
+    </span>
+    <p-inputSwitch
+      [pTooltip]="formula.active ? ('tooltip.deactivate' | i18next) : ('tooltip.activate' | i18next)"
+      tooltipPosition="top"
+      formControlName="active"
+    ></p-inputSwitch>
+  </div>
+
+  <p-panel class="conditions-panel block mb-3" [toggleable]="true">
+    <ng-template pTemplate="header">
+      <div class="flex align-items-center gap-2 text-xl">
+        <span>{{ "panel.conditions.title" | i18next }}</span>
+        <i
+          class="pi pi-info-circle ml-1"
+          [pTooltip]="'panel.conditions.tooltip.info' | i18next"
+        ></i>
+      </div>
+    </ng-template>
+    <p-table [value]="getConditionControls()">
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 160px" class="pl-4">
+            {{ "panel.conditions.table.option" | i18next }}
+          </th>
+          <th style="width: 180px">
+            {{ "panel.conditions.table.operation" | i18next }}
+          </th>
+          <th>{{ "panel.conditions.table.value" | i18next }}</th>
+          <th style="width: 0" class="pr-4"></th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-control let-rowIndex="rowIndex">
+        @if((control.hasError('required', 'option') && !control.untouched) ||
+          (control.hasError('required', 'operation') && !control.untouched) ||
+          (control.hasError('required', 'value') && !control.untouched)) {
+          <tr @fadeInOut>
+            <td colspan="3" class="pl-4 error">
+              <p-message
+                severity="error"
+                [text]="'panel.conditions.validation.conditions-invalid' | i18next"
+              ></p-message>
+            </td>
+          </tr>
+        }
+        <tr [formGroup]="control">
+          <td class="pl-4">
+            <p-dropdown
+              class="block w-full"
+              appendTo="body"
+              [options]="conditionOptions"
+              formControlName="option"
+              optionValue="key"
+              [placeholder]="'panel.conditions.placeholder.option' | i18next"
+              (onChange)="onConditionOptionChange(control)"
+              [virtualScroll]="false"
+              [virtualScrollItemSize]="38"
+            >
+              <ng-template pTemplate="selectedItem">
+                {{ conditionOptionLabels[control.value.option] | i18next }}
+              </ng-template>
+              <ng-template let-option pTemplate="item">
+                {{ option.label | i18next }}
+              </ng-template>
+            </p-dropdown>
+          </td>
+          <td>
+            <p-dropdown
+              class="block w-full"
+              appendTo="body"
+              [options]="getOperations(control.value.option)"
+              formControlName="operation"
+              optionValue="key"
+              [placeholder]="'panel.conditions.placeholder.operation' | i18next"
+              (onChange)="onConditionOperationChange(control)"
+              [virtualScroll]="false"
+              [virtualScrollItemSize]="38"
+            >
+              <ng-template pTemplate="selectedItem">
+                @if (control.value.operation) {
+                  <span>{{ conditionOperationLabels[control.value.operation] | i18next }}</span>
+                }
+              </ng-template>
+              <ng-template let-operation pTemplate="item">
+                <span>
+                  @if (operation.key) {
+                    {{ operation.label | i18next }}
+                  }
+                </span>
+              </ng-template>
+            </p-dropdown>
+          </td>
+          <td>
+            @if (getValueType(control.value.option) !== 'select') {
+              <input
+                [type]="getValueType(control.value.option)"
+                pInputText
+                formControlName="value"
+                class="w-full"
+                [placeholder]="'panel.conditions.placeholder.value' | i18next"
+              />
+            }
+            @if (control.value.option === 'typeId') {
+              <p-dropdown
+                class="w-full"
+                appendTo="body"
+                [options]="(idOptions$ | async) ?? []"
+                formControlName="value"
+                [placeholder]="'panel.conditions.placeholder.value' | i18next"
+                [group]="true"
+                optionValue="value"
+                optionLabel="label"
+                [virtualScroll]="false"
+                [virtualScrollItemSize]="38"
+              >
+                <ng-template pTemplate="selectedItem">
+                  {{ getSelectedIdOptionLabel$(control.value.value) | async }}
+                </ng-template>
+              </p-dropdown>
+            }
+            @if (control.value.option === 'material') {
+              <p-dropdown
+                class="w-full"
+                appendTo="body"
+                [options]="(materialOptions$ | async) ?? []"
+                formControlName="value"
+                [placeholder]="'panel.conditions.placeholder.value' | i18next"
+                [group]="true"
+                optionValue="value"
+                optionLabel="label"
+                [virtualScroll]="false"
+                [virtualScrollItemSize]="38"
+              >
+                <ng-template pTemplate="selectedItem">
+                  {{
+                    getSelectedMaterialOptionLabel$(control.value.value) | async
+                  }}
+                </ng-template>
+              </p-dropdown>
+            }
+            @if (control.value.option === 'dn1' || control.value.option === 'dn2') {
+              <p-dropdown
+                class="w-full"
+                appendTo="body"
+                [options]="dnOptions"
+                formControlName="value"
+                [placeholder]="'panel.conditions.placeholder.value' | i18next"
+                optionValue="value"
+                optionLabel="label"
+                [virtualScroll]="false"
+                [virtualScrollItemSize]="38"
+              >
+                <ng-template pTemplate="selectedItem">
+                  {{ getSelectedDNOptionLabel(control.value.value) }}
+                </ng-template>
+              </p-dropdown>
+            }
+          </td>
+          <td class="pr-4">
+            <p-button
+              [raised]="true"
+              severity="danger"
+              size="small"
+              (onClick)="deleteCondition(rowIndex)"
+              [pTooltip]="'panel.conditions.tooltip.remove' | i18next"
+              tooltipPosition="top"
+              class="block"
+            >
+              <i class="pi pi-times-circle"></i>
+            </p-button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <div class="buttons-container flex flex-column gap-2 px-4 mt-4">
+      @if (form.hasError('overlapping', 'conditions')) {
+        <p-message
+          class="mb-5"
+          @fadeInOut
+          severity="error"
+          [text]="'panel.conditions.validation.conditions-overlapping' | i18next"
+        ></p-message>
+      }
+
+      <p-button
+        [raised]="true"
+        type="button"
+        size="small"
+        severity="primary"
+        (onClick)="addCondition()"
+      >
+        <i class="pi pi-plus-circle" style="margin-right: 6px"></i>
+        {{ "panel.conditions.button.add" | i18next }}
+      </p-button>
+      @if (form.hasError('required', 'conditions')) {
+        <p-message
+          @fadeInOut
+          severity="error"
+          [text]="'panel.conditions.validation.conditions-minimum' | i18next"
+        ></p-message>
+      }
+    </div>
+  </p-panel>
+
+  <p-panel class="block" [toggleable]="true">
+    <ng-template pTemplate="header">
+      <div class="flex align-items-center gap-2 text-xl">
+        <span>{{ "panel.calculations.title" | i18next }}</span>
+        <i
+          class="pi pi-info-circle ml-1"
+          [pTooltip]="'panel.calculations.tooltip.info' | i18next"
+        ></i>
+      </div>
+    </ng-template>
+
+    <p-accordion
+      #helpAccordion
+      class="info-panel mb-3 block"
+      [ngClass]="{ 'is-activated': helpAccordionActivated }"
+      (activeIndexChange)="helpAccordionActivated = true"
+    >
+      <p-accordionTab [header]="'panel.calculations.info.title' | i18next">
+        <p-table class="pb-3 block" [value]="[{}]">
+          <ng-template pTemplate="body">
+            <tr>
+              <td class="font-bold">{{ "panel.calculations.info.label.math-symbols" | i18next }}</td>
+              <td>{{ "panel.calculations.info.value.math-symbols" | i18next }}</td>
+            </tr>
+            <tr>
+              <td class="font-bold">{{ "panel.calculations.info.label.quantity" | i18next }}</td>
+              <td>{{ "panel.calculations.info.value.quantity" | i18next }}</td>
+            </tr>
+            <tr>
+              <td class="font-bold">{{ "panel.calculations.info.label.d" | i18next }}</td>
+              <td>{{ "panel.calculations.info.value.d" | i18next }}</td>
+            </tr>
+            <tr>
+              <td class="font-bold">{{ "panel.calculations.info.label.s" | i18next }}</td>
+              <td>{{ "panel.calculations.info.value.s" | i18next }}</td>
+            </tr>
+            <tr>
+              <td class="font-bold">{{ "panel.calculations.info.label.weight" | i18next }}</td>
+              <td>{{ "panel.calculations.info.value.weight" | i18next }}</td>
+            </tr>
+            <tr>
+              <td class="font-bold">{{ "panel.calculations.info.label.efford" | i18next }}</td>
+              <td>{{ "panel.calculations.info.value.efford" | i18next }}</td>
+            </tr>
+            <tr>
+              <td class="font-bold">{{ "panel.calculations.info.label.material" | i18next }}</td>
+              <td [innerHTML]="'panel.calculations.info.value.material' | i18next: { currencySymbol: settings.currency.symbol}" ></td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-accordionTab>
+    </p-accordion>
+    <div class="flex flex-column gap-1" formGroupName="calculation">
+
+      <span class="flex flex-column gap-1 w-full mb-5">
+        <label for="materialInput">{{
+          "panel.calculations.labels.material" | i18next : { currencySymbol: settings.currency.symbol }
+        }}</label>
+        <input
+          #materialInput
+          class="p-inputtext w-full"
+          pInputText
+          formControlName="priceMaterial"
+          [placeholder]="'panel.calculations.placeholder.material' | i18next"
+        />
+        @if (form.hasError('formula', 'calculation.priceMaterial')) {
+          <p-message
+            @fadeInOut
+            severity="error"
+            [text]="'panel.calculations.validation.formula-invalid' | i18next"
+          ></p-message>
+        }
+      </span>
+
+      <span class="flex flex-column gap-1 w-full">
+        <label for="effordInput">
+          {{ "panel.calculations.labels.efford" | i18next }}
+          <i [pTooltip]="'panel.calculations.labels.efford-tooltip' | i18next " class="pi pi-info-circle ml-1"></i>
+        </label>
+        <input
+          #effordInput
+          class="p-inputtext w-full"
+          pInputText
+          formControlName="effordHours"
+          [placeholder]="'panel.calculations.placeholder.efford' | i18next"
+        />
+        @if (form.hasError('formula', 'calculation.effordHours')) {
+          <p-message
+            @fadeInOut
+            severity="error"
+            [text]="'panel.calculations.validation.formula-invalid' | i18next"
+          ></p-message>
+        }
+      </span>
+
+    </div>
+  </p-panel>
+</form>

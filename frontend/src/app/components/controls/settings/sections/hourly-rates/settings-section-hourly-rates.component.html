@@ -1,0 +1,122 @@
+<form [formGroup]="form" class="flex flex-column w-full">
+  <p-panel class="block mb-3">
+    <ng-template pTemplate="header">
+      <div class="align-items-center gap-2 text-xl">
+        <span>{{ "panel.split.title" | i18next }}</span>
+        <i class="pi pi-info-circle ml-2" [pTooltip]="'panel.split.tooltip.info' | i18next"></i>
+      </div>
+    </ng-template>
+    <div class="flex flex-row align-items-center">
+      <div class="w-1">
+        <p-inputSwitch
+          formControlName="seperateManufacturingAssembly"
+          [pTooltip]="form.get('seperateManufacturingAssembly')?.value ? ('panel.split.tooltip.deactivate' | i18next) : ('panel.split.tooltip.activate' | i18next)"
+          tooltipPosition="top"
+          appendTo="body"
+        ></p-inputSwitch>
+      </div>
+      @if (form.get('seperateManufacturingAssembly')?.value === true) {
+        <div @fadeInOut class="w-11 flex flex-row align-items-center">
+          <div class="w-4 p-4 text-center text-xl">
+            <div>
+              <span class="flex-row">{{ "panel.split.manufacturing" | i18next }}</span>
+            </div>
+            <div>
+              <span>{{ form.get('manufacturingSplitAmount')?.value }}</span>
+              <span> %</span>
+            </div>
+          </div>
+          <div class="w-8 p-4">
+            <p-slider
+              class="align-items-center w-full"
+              formControlName="manufacturingSplitAmount"
+            ></p-slider>
+          </div>
+          <div class="w-4 p-4 text-xl text-center">
+            <div>
+              <span class="flex-row">{{ "panel.split.assembly" | i18next }}</span>
+            </div>
+            <div>
+              <span>{{ 100 - $any(form.get('manufacturingSplitAmount')?.value ?? 0) }}</span>
+              <span> %</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </p-panel>
+
+  <p-panel @fadeInOut class="block mb-3">
+    <ng-template pTemplate="header">
+      <div class="align-items-center gap-2 text-xl">
+        @if (form.get('seperateManufacturingAssembly')?.value === false) {
+          <span>{{ "panel.rates.title.mixed" | i18next }}</span>
+          <i class="pi pi-info-circle ml-2" [pTooltip]="'panel.rates.tooltip.mixed' | i18next"
+          ></i>
+        } @else {
+          <span>{{ 'panel.rates.title.splitted' | i18next }}</span>
+          <i class="pi pi-info-circle ml-2" [pTooltip]="'panel.rates.tooltip.splitted' | i18next"></i>
+        }
+      </div>
+    </ng-template>
+    <div class="mt-4">
+      @if(form.get('seperateManufacturingAssembly')?.value === false) {
+        <div @fadeInOut>
+          <p-inputGroup class="p-float-label">
+            <p-inputNumber
+              #mixed
+              formControlName="hourlyMixedPrice"
+              mode="decimal"
+              locale="de-DE"
+              [minFractionDigits]="2"
+              [maxFractionDigits]="2"
+            ></p-inputNumber>
+            <label for="mixed">{{ 'panel.rates.input.mixed' | i18next }}</label>
+            <p-inputGroupAddon>{{ settings.currency.symbol }}</p-inputGroupAddon>
+          </p-inputGroup>
+          @if (form.controls['hourlyMixedPrice'].touched) {
+            @if (form.controls['hourlyMixedPrice'].hasError('required')) {
+              <p-message severity="error" [text]="'validation.mixed-hourly-rate.required' | i18next"></p-message>
+            }
+            @if (form.controls['hourlyMixedPrice'].hasError('min')) {
+              <p-message severity="error" [text]="'validation.mixed-hourly-rate.invalid' | i18next"></p-message>
+            }
+          }
+        </div>
+      } @else {
+        <div class="flex flex-row gap-2">
+          <div @fadeInOut class="col-6">
+            <p-inputGroup class="p-float-label">
+              <p-inputNumber #manufacturing formControlName="hourlyManufacturingPrice" mode="decimal" locale="de-DE" [minFractionDigits]="2" [maxFractionDigits]="2"></p-inputNumber>
+              <label for="manufacturing">{{ 'panel.rates.input.manufacturing' | i18next }}</label>
+              <p-inputGroupAddon>{{ settings.currency.symbol }}</p-inputGroupAddon>
+            </p-inputGroup>
+            @if (form.controls['hourlyManufacturingPrice'].touched) {
+              @if (form.controls['hourlyManufacturingPrice'].hasError('required')) {
+                <p-message severity="error" [text]="'validation.hourly-manufacturing-rate.required' | i18next"></p-message>
+              }
+              @if (form.controls['hourlyManufacturingPrice'].hasError('min')) {
+                <p-message severity="error" [text]="'validation.hourly-manufacturing-rate.invalid' | i18next"></p-message>
+              }
+            }
+          </div>
+          <div @fadeInOut class="col-6">
+            <p-inputGroup class="p-float-label">
+              <p-inputNumber #assembly formControlName="hourlyAssemblyPrice" mode="decimal" locale="de-DE" [minFractionDigits]="2" [maxFractionDigits]="2"></p-inputNumber>
+              <label for="assembly">{{ 'panel.rates.input.assembly' | i18next }}</label>
+              <p-inputGroupAddon>{{ settings.currency.symbol }}</p-inputGroupAddon>
+            </p-inputGroup>
+            @if (form.controls['hourlyAssemblyPrice'].touched) {
+              @if (form.controls['hourlyAssemblyPrice'].hasError('required')) {
+                <p-message severity="error" [text]="'validation.hourly-assembly-rate.required' | i18next"></p-message>
+              }
+              @if (form.controls['hourlyAssemblyPrice'].hasError('min')) {
+                <p-message severity="error" [text]="'validation.hourly-assembly-rate.invalid' | i18next"></p-message>
+              }
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </p-panel>
+</form>

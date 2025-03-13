@@ -1,0 +1,29 @@
+:host ::ng-deep  {
+    .p-datatable .p-datatable-thead>tr>th {
+        background-color: transparent;
+    }
+
+    .p-datatable .p-datatable-tbody>tr>td.error {
+        border: 0;
+    }
+
+
+    .p-element.w-full {
+        display: block;
+
+        > span {
+            display: block;
+            > * {
+                width: 100%;
+            }
+        }
+    }
+
+    td {
+        align-content: start;
+    }
+}
+
+.fixed-layout table {
+    table-layout: fixed;
+}

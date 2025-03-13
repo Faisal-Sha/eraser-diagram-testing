@@ -1,0 +1,39 @@
+<p-panel class="block mb-3">
+  <ng-template pTemplate="header">
+    <div class="flex align-items-center gap-2 text-xl">
+      <span>{{ "general.language" | i18next }}</span>
+    </div>
+  </ng-template>
+  <app-control-language [(ngModel)]="language" (ngModelChange)="updateLanguage($event)"></app-control-language>
+</p-panel>
+<p-panel class="block mb-3">
+  <ng-template pTemplate="header">
+    <div class="flex align-items-center gap-2 text-xl">
+      <span>{{ "general.logo.header" | i18next }}</span>
+      <i class="pi pi-info-circle ml-1" [pTooltip]="'general.logo.info' | i18next"></i>
+    </div>
+  </ng-template>
+
+  <div class="col-6">
+    <img [src]="" class="img-fluid img-thumbnail">
+    <p-image [src]="logoSrc" width="100%" [preview]="true"></p-image>
+  </div>
+
+  <div class="flex flex-row gap-2 mt-2">
+    <p-button [raised]="true" type="button" severity="primary" size="small" (click)="jsonFile.click()" [label]="'general.logo.upload-button' | i18next">
+      <input #jsonFile type="file" (change)="uploadLogo($event)" accept="image/*" style="display:none;">
+    </p-button>
+    <p-button [raised]="true" type="button" severity="secondary" size="small" (click)="removeLogo()" [label]="'general.logo.reset-button' | i18next"></p-button>
+  </div>
+</p-panel>
+
+<p-panel class="block">
+  <ng-template pTemplate="header">
+    <div class="flex align-items-center gap-2 text-xl">
+      <span>{{ "general.currency.title" | i18next }}</span>
+      <i class="pi pi-info-circle ml-1" [pTooltip]="'general.currency.info' | i18next"></i>
+    </div>
+  </ng-template>
+  <p class="mb-4">{{ "general.currency.description" | i18next }}</p>
+  <app-control-currency [(ngModel)]="this.currency" (ngModelChange)="updateCurrency($event)"></app-control-currency>
+</p-panel>

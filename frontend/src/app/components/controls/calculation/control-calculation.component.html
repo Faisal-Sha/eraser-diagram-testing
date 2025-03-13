@@ -1,0 +1,815 @@
+@if (progressIndicatorService.statusSubject$ | async) {
+  <p-progressBar [style]="{ height: '6px' }" mode="indeterminate"></p-progressBar>
+}
+
+@if (settings | async; as settings) {
+
+  <ng-template #stepsTable let-steps="steps" let-item="item" let-splitPercentage="splitPercentage" let-splitName="splitName">
+    <p-table #table [value]="[{}]" class="slim-table">
+      <ng-template pTemplate="header">
+        <tr>
+          <th class="text-right">{{ 'price-calculation.table-titles.quantity' | i18next }}</th>
+          <th>{{ 'price-calculation.table-titles.step' | i18next }}</th>
+          <th>{{ 'price-calculation.table-titles.size' | i18next }}</th>
+          <th class="text-right">{{ 'price-calculation.table-titles.efford' | i18next }}</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData>
+        @for (step of steps; track $index) {
+          <tr>
+            <td class="text-right">{{ step.quantity | number : "1.2-2" }}</td>
+            <td>{{ 'price-calculation.steps.description.' + step.name | i18next : { unit: ('unit.' + itemService.getUnit(item) | i18next) } }}</td>
+            <td>{{ step.size }}</td>
+            <td class="text-right">{{ step.efford | number : "1.2-2" }} h</td>
+          </tr>
+        }
+      </ng-template>
+      <ng-template pTemplate="footer">
+        <tr>
+          <td colspan="3" class="text-right">{{ 'price-calculation.table-titles.total' | i18next }}</td>
+          <td class="text-right">≈ {{ ($any(item | getItemAttribute : AttributeName.EFFORD_HOURS) | number : "1.2-2") ?? "-" }} h</td>
+        </tr>
+        @if (splitPercentage && splitName) {
+          <tr>
+            <td colspan="3" class="text-right">{{ splitName }}</td>
+            <td class="text-right">≈ {{ (($any(item | getItemAttribute : AttributeName.EFFORD_HOURS) * splitPercentage) | number : "1.2-2") ?? "-" }} h</td>
+          </tr>
+        }
+      </ng-template>
+    </p-table>
+  </ng-template>
+
+  <ng-template #renderChangeAmount let-changeAmount="changeAmount" let-quantity="quantity">
+    @if(unitPriceService.isUnitPriceViewActive) {
+      {{ ((changeAmount > 0) ? '+' : '') + (changeAmount / quantity | number:"0.2-2") + ' ' + settings.currency.symbol }}
+    }@else {
+      {{ ((changeAmount > 0) ? '+' : '') + (changeAmount | number:"0.2-2") + ' ' + settings.currency.symbol }}
+    }
+  </ng-template>
+
+  <ng-template #infoAppliedFormulas let-item="item" let-formulaField="formulaField" let-changesField="changesField">
+    <div>
+      @if (filterFormulas($any(item | getItemAttribute : AttributeName.FORMULAS), formulaField); as formulas) {
+        @if (Array.isArray(formulas) && formulas.length > 0) {
+          <div class="m-0 mt-5 mb-2 w-full font-bold text-xl flex flex-wrap gap-2">
+            <div class="flex items-center gap-2">
+              <span>
+                {{ 'price-calculation.table-titles.applied-formulas' | i18next }}
+              </span>
+              <i
+                class="pi pi-info-circle"
+                [pTooltip]="'price-calculation.tooltips.applied-formulas' | i18next: { currencySymbol: settings.currency.symbol }"
+              ></i>
+            </div>
+            @if(formulas.length > 1) {
+              <div class="formula-right-nowrap">
+                <ng-container *ngTemplateOutlet="renderChangeAmount; context: { changeAmount: $any(item | getItemAttribute : AttributeName.TOTAL_FORMULA_CHANGE)?.[changesField], quantity: item.quantity }"></ng-container>
+              </div>
+            }
+          </div>
+          @if(unitPriceService.isUnitPriceViewActive) {
+            <div class="flex gap-2 flex-row text-primary font-bold text-xl"> {{ 'price-calculation.table-titles.calculation-per-unit' | i18next }}</div>
+          }
+          
+          @for (formula of formulas; track $index) {
+            <div class="flex flex-column gap-2 w-full">
+              <p-table #table [value]="[{}]" class="slim-table">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>{{$index+1}}. {{ formula.name }}</th>
+                    <th class="formula-right-nowrap"> 
+                      <ng-container *ngTemplateOutlet="renderChangeAmount; context: { changeAmount: formula.changes?.[changesField]?.value, quantity: item.quantity }"></ng-container>
+                    </th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-rowData>
+                  <tr>
+                    <td colspan="2">{{ resolveCalculationFormula(formula.formulas[formulaField]) }}</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          }
+        }
+      }
+    </div>
+  </ng-template>
+
+  <ng-template #infoAppliedFormulasGroup let-item="item" let-changesField="changesField" let-price="price">
+    @if(unitPriceService.isUnitPriceViewActive) {
+      {{'-'}} 
+    } @else {
+      <ng-container *ngTemplateOutlet="renderPriceText; context: { item: item, price: price, panel: groupPanel }"></ng-container>
+      <p-overlayPanel #groupPanel>
+        <div class="">
+          @if ($any(item | getItemAttribute : AttributeName.FORMULAS); as formulas) {
+            @if(formulas.length === 0) {
+              <div class="text-l" [innerHTML]="'price-calculation.table-titles.no-formula-text' | i18next"></div>
+            } @else {
+              <div class="flex flex-column gap-2 font-bold w-26rem">
+                <div class="flex align-items-center justify-content-between w-full text-xl">
+                  <div class="flex align-items-center">
+                    <span class="font-bold flex flex-nowrap">
+                      {{ 'price-calculation.table-titles.applied-formulas' | i18next }}
+                    </span>
+                    <i
+                      class="ml-1 pi pi-info-circle"
+                      [pTooltip]="'price-calculation.tooltips.applied-formulas' | i18next: { currencySymbol: settings.currency.symbol }"
+                    ></i>
+                  </div>
+                  @if(formulas.length > 1) {
+                    <div class="formula-right-nowrap">
+                      <ng-container *ngTemplateOutlet="renderChangeAmount; context: { changeAmount: $any(item | getItemAttribute : AttributeName.TOTAL_FORMULA_CHANGE)?.[changesField], quantity: item.quantity }"></ng-container>
+                    </div>
+                  }
+                </div>
+                <div class="flex flex-column gap-2 w-full">
+                  <p-table #table [value]="[{}]" class="slim-table">
+                    <ng-template pTemplate="body">
+                      @for (formula of formulas; track $index) {
+                        <tr>
+                          <td>{{$index+1}}. {{ formula.name }}</td>
+                          <td class="formula-right-nowrap">
+                            <ng-container *ngTemplateOutlet="renderChangeAmount; context: { changeAmount: formula.changes?.[changesField]?.value, quantity: item.quantity }"></ng-container>
+                          </td>
+                        </tr>
+                      }
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            }
+          }
+        </div>
+      </p-overlayPanel>
+    }
+  </ng-template>
+
+  <ng-template #infoAction let-item="item">
+    @if (itemHasErrors(item)) {
+      <p-button
+        icon="pi pi-exclamation-triangle"
+        [raised]="true"
+        [rounded]="true"
+        severity="danger"
+        size="small"
+        class="action-button"
+        (onClick)="infoPanel.toggle($event)"
+        [pTooltip]="'tooltip.info' | i18next"
+        tooltipPosition="bottom"
+      ></p-button>
+    } @else if (itemHasFormulas(item)) {
+      <p-button
+        icon="pi pi-info"
+        [raised]="true"
+        [rounded]="true"
+        severity="info"
+        size="small"
+        class="action-button"
+        (onClick)="infoPanel.toggle($event)"
+        [pTooltip]="'tooltip.info' | i18next"
+        tooltipPosition="bottom"
+      ></p-button>
+    } @else {
+      <p-button
+        icon="pi pi-info"
+        [raised]="true"
+        [rounded]="true"
+        [outlined]="true"
+        severity="info"
+        size="small"
+        class="action-button"
+        (onClick)="infoPanel.toggle($event)"
+        [pTooltip]="'tooltip.info' | i18next"
+        tooltipPosition="bottom"
+      ></p-button>
+    }
+    <p-overlayPanel #infoPanel>
+      <div class="flex flex-column gap-5 w-25rem">
+        <div>
+          <h3 class="m-0">{{ 'price-calculation.part-information-title' | i18next }}</h3>
+          <p-table #table [value]="[{}]" class="slim-table block">
+            <ng-template pTemplate="body" let-rowData>
+              <tr>
+                <td class="font-bold w-3">{{ 'price-calculation.information.engify-id' | i18next }}</td>
+                <td>{{ item.typeId }}</td>
+              </tr>
+              <tr>
+                <td class="font-bold w-3">{{ 'price-calculation.information.standard' | i18next }}</td>
+                <td>{{ (item | getItemAttribute : AttributeName.STANDARD) ?? '-' }}</td>
+              </tr>
+              <tr>
+                <td class="font-bold w-3">{{ 'price-calculation.information.weight' | i18next }}</td>
+                <td>{{ ($any(item | getItemAttribute : AttributeName.WEIGHT)) | number: "1.2-2" }} kg/{{ 'unit.' + itemService.getUnit(item) | i18next }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+
+        @if (item | getItemAttribute : AttributeName.FORMULAS; as formulas)  {
+          @if (Array.isArray(formulas) && formulas.length > 0) {
+            <div>
+              <div class="m-0 text-xl flex justify-content-between align-items-center font-bold">
+                <div>{{ 'price-calculation.table-titles.formulas' | i18next}}</div>
+                @if(formulas.length > 1) {
+                  <div class="formula-right-nowrap">
+                    @if(($any(item | getItemAttribute : AttributeName.TOTAL_FORMULA_CHANGE)?.[AttributeName.PRICE_TOTAL]); as totalFormulaChangeSum) {
+                      @if(unitPriceService.isUnitPriceViewActive) {
+                        {{ ((totalFormulaChangeSum > 0) ? '+' : '') + (totalFormulaChangeSum / item.quantity| number:"0.2-2") + ' ' + settings.currency.symbol }}
+                      }@else {
+                        {{ ((totalFormulaChangeSum > 0) ? '+' : '') + (totalFormulaChangeSum | number:"0.2-2") + ' ' + settings.currency.symbol }}
+                      }
+                    }
+                  </div>
+                }
+              </div>
+              @if(unitPriceService.isUnitPriceViewActive) {
+                <div class="flex gap-2 flex-row text-primary font-bold text-xl"> {{ 'price-calculation.table-titles.calculation-per-unit' | i18next }}</div>
+              }
+              <p-table #table [value]="[{}]" class="slim-table block mt-2">
+                <ng-template pTemplate="body" let-rowData>
+                  @for (formula of formulas; track $index; ){
+                    <tr>
+                      <td class="font-bold">{{ formula.name }}</td>
+                      <td class="font-bold formula-right-nowrap">
+                        @if(formula.totalChanges; as formulaTotalChanges) {
+                          @if(unitPriceService.isUnitPriceViewActive) {
+                            {{ ((formulaTotalChanges > 0) ? '+' : '') + (formulaTotalChanges / item.quantity| number:"0.2-2") + ' ' + settings.currency.symbol }}
+                          }@else {
+                            {{ ((formulaTotalChanges > 0) ? '+' : '') + (formulaTotalChanges | number:"0.2-2")+ ' ' + settings.currency.symbol }}
+                          }
+                        }
+                      </td>
+                    </tr>
+                  }
+                </ng-template>
+              </p-table>
+            </div>
+          }
+        }
+
+        @if (item | getItemAttribute : AttributeName.ERRORS; as errors) {
+          @if (Array.isArray(errors) && errors.length > 0) {
+            <div>
+              <h3 class="m-0">{{ 'price-calculation.table-titles.errors' | i18next }}</h3>
+              <div class="flex flex-column gap-2 mt-3">
+                @for (error of errors; track $index) {
+                  <div class="flex flex-row align-items-center pl-3">
+                    <i class="pi pi-exclamation-circle mr-2"></i>
+                    <span>{{ error.message }}</span>
+                  </div>
+                }
+              </div>   
+            </div>
+          }
+        }
+      </div>
+    </p-overlayPanel>
+  </ng-template>
+
+  <ng-template #renderPriceText let-item="item" let-price="price" let-panel="panel">
+    <div class="flex flex-row gap-2 justify-content-end align-items-center">
+      <span
+        [pTooltip]="Number.isFinite(price) ? ('price-calculation.tooltips.show-calculation' | i18next) : undefined"
+        (click)="Number.isFinite(price) && panel.toggle($event)"
+        [ngClass]="Number.isFinite(price) ? 'cursor-pointer no-underline hover:underline' : ''"
+      >
+      @if(unitPriceService.isUnitPriceViewActive) {
+        <div class="text-primary font-bold">
+          {{ ((price / item.quantity | number : '1.2-2') ?? ('0' | number: '1.2-2')) + ' ' + settings.currency.symbol }}
+        </div>
+      } @else {
+        {{ ((price | number : '1.2-2') ?? '-') + ' ' + settings.currency.symbol }}
+      }
+      </span>
+    </div>
+  </ng-template>
+
+  <ng-template #renderGroupPriceText let-item="item" let-attributeName="attributeName">
+    <div class="flex flex-row gap-2 justify-content-end align-items-center">
+      @if ((item | getItemAttribute : AttributeName.IS_CALCULATING) || (item | getItemAttribute : AttributeName.IS_PROCESSING)) {
+        <p-progressSpinner strokeWidth="4"></p-progressSpinner>
+      } @else {
+        @if (!(item | getItemAttribute : AttributeName.IS_CALCULATED)) {
+          <i class="pi pi-exclamation-circle mr-1" [pTooltip]="'tooltip.unfinished-info' | i18next"></i>
+        }
+        <ng-container *ngTemplateOutlet="infoAppliedFormulasGroup; context: { item: item, changesField: attributeName, price: $any(item | getItemAttribute : attributeName)}"></ng-container>
+      }
+    </div>
+  </ng-template>
+
+  <ng-template #priceMaterial let-item="item">
+    <ng-container *ngTemplateOutlet="renderPriceText; context: { item: item, price: $any(item | getItemAttribute : AttributeName.PRICE_MATERIAL), panel: priceMaterialPanel }"></ng-container>
+    <p-overlayPanel #priceMaterialPanel>
+      @if ($any(item | getItemAttribute : AttributeName.CALCULATION_MATERIAL); as calculation) {
+        <div class="flex flex-column gap-2 w-26rem">
+          <h3 class="m-0">{{ 'price-calculation.table-titles.material-calculation' | i18next }}</h3>
+          <p-table #table [value]="[{}]" class="slim-table">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>{{ 'price-calculation.table-titles.overview' | i18next }}</th>
+                <th class="text-right">{{ 'price-calculation.table-titles.values' | i18next }}</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowData>
+              @for (factor of calculation?.['factors']; track $index) {
+                <tr>
+                  <td class="font-bold w-6">{{ 'price-calculation.factors.description.' + factor.id | i18next : { unit: ('unit.' + itemService.getUnit(item) | i18next), currencySymbol: settings.currency.symbol } }}</td>
+                  @if (factor.id === MaterialFactorID.UNIT_PRICE) {
+                    <td class="text-right">{{ ($any(factor.value) | number) ? (($any(factor.value) * settings.currency.exchangeRate) | number : "1.2-2") : "-" }}</td>
+                  } @else {
+                    <td class="text-right">{{ ($any(factor.value) | number : "1.2-2") ?? "-" }}</td>
+                  }
+                </tr>
+              }
+            </ng-template>
+          </p-table>
+
+          <p-table #table [value]="[{}]" class="slim-table mt-3">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>{{ 'price-calculation.table-titles.general-calculation' | i18next }}</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowData>
+              <tr>
+                <td>{{ resolveCalculationFormula(calculation.formula) }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
+
+          <ng-container *ngTemplateOutlet="infoAppliedFormulas; context: { item: item, formulaField: AttributeName.PRICE_MATERIAL, changesField: AttributeName.PRICE_MATERIAL}"></ng-container>
+        </div>
+      }
+    </p-overlayPanel>
+  </ng-template>
+
+  <ng-template #priceEfford let-item="item">
+    <ng-container *ngTemplateOutlet="renderPriceText; context: { item: item, price: $any(item | getItemAttribute : AttributeName.PRICE_EFFORD), panel: priceEffordPanel }"></ng-container>
+    <p-overlayPanel #priceEffordPanel>
+      @if ($any(item | getItemAttribute : AttributeName.CALCULATION_EFFORD_HOURS); as calculation) {
+        <div class="flex flex-column gap-2 w-35rem">
+          <h3 class="m-0">{{ 'price-calculation.table-titles.efford-mix-calculation' | i18next }}</h3>
+          
+          <ng-container
+          *ngTemplateOutlet="
+            stepsTable;
+            context: { item: item, steps: calculation.steps }
+          "></ng-container>
+
+          <ng-container *ngTemplateOutlet="infoAppliedFormulas; context: { item: item, formulaField: AttributeName.EFFORD_HOURS, changesField: AttributeName.PRICE_EFFORD}"></ng-container>
+
+          <p class="mb-0" [innerHTML]="'price-calculation.texts.efford-mix' | i18next : {
+            efford: (($any(item | getItemAttribute : AttributeName.EFFORD_HOURS) | number : '1.2-2') ?? '-') + ' ' + settings.currency.symbol,
+            price: ((settings.calculation.hourlyMixedPrice | number : '1.2-2') ?? '-') + ' ' + settings.currency.symbol
+          }"></p>
+        </div>
+      }
+    </p-overlayPanel>
+  </ng-template>
+
+  <ng-template #priceManufacturing let-item="item">
+    <ng-container *ngTemplateOutlet="renderPriceText; context: { item: item, price: $any(item | getItemAttribute : AttributeName.PRICE_MANUFACTURING), panel: priceManufacturingPanel }"></ng-container>
+    <p-overlayPanel #priceManufacturingPanel>
+      @if ($any(item | getItemAttribute : AttributeName.CALCULATION_EFFORD_HOURS); as calculation) {
+        <div class="flex flex-column gap-2 w-35rem">
+          <h3 class="m-0">{{ 'price-calculation.table-titles.efford-manufacturing-calculation' | i18next }}</h3>
+          
+          <ng-container
+          *ngTemplateOutlet="
+            stepsTable;
+            context: { item: item, steps: calculation.steps, splitPercentage: (settings.calculation.manufacturingSplitAmount/100), splitName: 'price-calculation.table-titles.split-manufacturing' | i18next : { manufacturing: settings.calculation.manufacturingSplitAmount } }
+          "></ng-container>
+
+          <ng-container *ngTemplateOutlet="infoAppliedFormulas; context: { item: item, formulaField: AttributeName.EFFORD_HOURS, changesField: AttributeName.PRICE_MANUFACTURING}"></ng-container>
+
+          <p class="mb-0" [innerHTML]="'price-calculation.texts.efford-manufacturing' | i18next : {
+            efford: (($any(item | getItemAttribute : AttributeName.EFFORD_HOURS) * (settings.calculation.manufacturingSplitAmount/100)) | number : '1.2-2') ?? '-',
+            price: ((settings.calculation.hourlyManufacturingPrice  | number : '1.2-2') ?? '-') + ' ' + settings.currency.symbol
+          }"></p>
+
+        </div>
+      }
+    </p-overlayPanel>
+  </ng-template>
+
+  <ng-template #priceAssembly let-item="item">
+    <ng-container *ngTemplateOutlet="renderPriceText; context: { item: item, price: $any(item | getItemAttribute : AttributeName.PRICE_ASSEMBLY), panel: priceAssemblyPanel }"></ng-container>
+    <p-overlayPanel #priceAssemblyPanel>
+      @if ($any(item | getItemAttribute : AttributeName.CALCULATION_EFFORD_HOURS); as calculation) {
+        <div class="flex flex-column gap-2 w-35rem">
+          <h3 class="m-0">{{ 'price-calculation.table-titles.efford-assembly-calculation' | i18next }}</h3>
+          
+          <ng-container
+          *ngTemplateOutlet="
+            stepsTable;
+            context: { item: item, steps: calculation.steps, splitPercentage: ((100-settings.calculation.manufacturingSplitAmount)/100), splitName: 'price-calculation.table-titles.split-assembly' | i18next : { assembly: 100 - settings.calculation.manufacturingSplitAmount } }
+          "></ng-container>
+
+          <ng-container *ngTemplateOutlet="infoAppliedFormulas; context: { item: item, formulaField: AttributeName.EFFORD_HOURS, changesField: AttributeName.PRICE_ASSEMBLY}"></ng-container>
+          <p class="mb-0" [innerHTML]="'price-calculation.texts.efford-assembly' | i18next : {
+            efford: (($any(item | getItemAttribute : AttributeName.EFFORD_HOURS) * ((100-settings.calculation.manufacturingSplitAmount)/100)) | number : '1.2-2') ?? '-',
+            price: ((settings.calculation.hourlyAssemblyPrice | number : '1.2-2') ?? '-') + ' ' + settings.currency.symbol
+          }"></p>
+        </div>
+      }
+    </p-overlayPanel>
+  </ng-template>
+
+  <ng-template
+    #renderGroupWrapper
+    let-parent="parent"
+    let-level="level"
+    let-showHeader="showHeader"
+  >
+    <p-table
+      #table
+      [value]="parent.items"
+      dataKey="id"
+      [style]="{ paddingLeft: (level > 0 ? 32 : 0) + 'px' }"
+      [expandedRowKeys]="getExpandedItemKeys(parent)"
+      (onRowExpand)="toggleExpansionState(parent, $event)"
+      (onRowCollapse)="toggleExpansionState(parent, $event)"
+      selectionMode="single"
+      [(selection)]="selectedItem"
+      class="fixed-layout"
+      (onRowReorder)="onRowReorder($event)"
+    >
+      @if (showHeader) {
+        <ng-template pTemplate="header">
+          <tr>
+            <th width="60px"></th>
+            <th></th>
+            <th
+              width="140px"
+              class="text-right"
+            >
+              {{ "pipefittings.column.price.material" | i18next }}
+            </th>
+            @if (settings.calculation.seperateManufacturingAssembly) {
+              <th
+                width="140px"
+                class="text-right"
+              >
+                {{ 'pipefittings.column.price.manufacturing' | i18next }}
+              </th>
+              <th
+                width="140px"
+                class="text-right"
+              >
+                {{ 'pipefittings.column.price.assembly' | i18next }}
+              </th>
+            } @else {
+              <th
+                width="140px"
+                class="text-right"
+              >
+                {{ "pipefittings.column.price.efford" | i18next }}
+              </th>
+            }
+            <th width="120px"></th>
+          </tr>
+        </ng-template>
+      }
+      <ng-template
+        pTemplate="body"
+        let-item
+        let-expanded="expanded"
+        let-rowIndex="rowIndex"
+      >
+        <tr
+          class="cursor-pointer border-bottom"
+          [pReorderableRow]="rowIndex"
+          [pSelectableRow]="item"
+        >
+          <td width="60px" class="pr-0 py-0 surface-200">
+            <div class="flex flex-row align-items-center justify-content-center">
+              <span class="pi pi-bars" pReorderableRowHandle></span>
+              <button
+                type="button"
+                pButton
+                [pRowToggler]="item"
+                pRipple
+                class="p-button-text p-button-rounded p-button-plain"
+                [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+              ></button>
+            </div>
+          </td>
+          <td
+            [pEditableColumn]="item.name"
+            pEditableColumnField="name"
+            class="surface-200 py-0"
+          >
+            <div class="flex flex-row align-items-center gap-2">
+              <i [class]="ITEM_CATEGORY_TO_ICON[item.contains]"></i>
+              <div class="flex flex-column w-full">
+                <p-inplace #nameEdit>
+                  <ng-template pTemplate="display">
+                    <span class="d-block font-bold text-lg">{{ item.name }}</span>
+                  </ng-template>
+                  <ng-template pTemplate="content">
+                    <input
+                      [(ngModel)]="item.name"
+                      pInputText
+                      (blur)="nameEdit.deactivate($event)"
+                      (keyup.enter)="nameEdit.deactivate($event)"
+                      (ngModelChange)="onRowChange()"
+                    />
+                  </ng-template>
+                </p-inplace>
+              </div>
+            </div>
+          </td>
+          <td width="140px" class="text-right font-bold surface-200 whitespace-no-wrap py-0">
+            <ng-container *ngTemplateOutlet="renderGroupPriceText; context: { item: item, attributeName: AttributeName.PRICE_MATERIAL }"></ng-container>
+          </td>
+          @if (settings.calculation.seperateManufacturingAssembly) {
+            <td width="140px" class="text-right font-bold surface-200 whitespace-no-wrap py-0">
+              <ng-container *ngTemplateOutlet="renderGroupPriceText; context: { item: item, attributeName: AttributeName.PRICE_MANUFACTURING }"></ng-container>
+            </td>
+            <td width="140px" class="text-right font-bold surface-200 whitespace-no-wrap py-0">
+              <ng-container *ngTemplateOutlet="renderGroupPriceText; context: { item: item, attributeName: AttributeName.PRICE_ASSEMBLY }"></ng-container>
+            </td>
+          } @else {
+            <td width="140px" class="text-right font-bold surface-200 whitespace-no-wrap py-0">
+              <ng-container *ngTemplateOutlet="renderGroupPriceText; context: { item: item, attributeName: AttributeName.PRICE_EFFORD }"></ng-container>
+            </td>
+          }
+          <td width="120px" class="surface-200 py-0">
+            <div class="flex flex-row gap-2 justify-content-end">
+              <p-button
+                icon="pi pi-copy"
+                [raised]="true"
+                [rounded]="true"
+                severity="secondary"
+                size="small"
+                class="action-button"
+                [pTooltip]="'tooltip.duplicate' | i18next"
+                tooltipPosition="bottom"
+                (onClick)="duplicateItem(item)"
+              ></p-button>
+              <p-button
+                icon="pi pi-times-circle"
+                [raised]="true"
+                [rounded]="true"
+                severity="danger"
+                size="small"
+                class="action-button"
+                [pTooltip]="'tooltip.remove' | i18next"
+                tooltipPosition="bottom"
+                (onClick)="removeItem(item)"
+              ></p-button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="rowexpansion" let-item let-rowIndex="rowIndex">
+        <tr>
+          <td [attr.colspan]="settings.calculation.seperateManufacturingAssembly ? 6 : 5" class="p-0 surface-100">
+            @if (item.contains === ItemCategory.GROUP) {
+              <ng-container
+                *ngTemplateOutlet="
+                  renderGroupWrapper;
+                  context: { parent: item, level: level + 1, showHeader: false }
+                "
+              ></ng-container>
+            } @else {
+              <ng-container
+                *ngTemplateOutlet="
+                  renderItemWrapper;
+                  context: { parent: item, level: level + 1 }
+                "
+              ></ng-container>
+            }
+          </td>
+        </tr>
+      </ng-template>
+      @if (level === 0) {
+        <ng-template pTemplate="footer">
+          <tr>
+            <td colspan="2" class="text-right whitespace-no-wrap">{{ 'pipefittings.result.subtotal' | i18next }}</td>
+
+            <td class="text-right whitespace-no-wrap">
+              <ng-container *ngTemplateOutlet="renderGroupPriceText; context: { item: parent, attributeName: AttributeName.PRICE_MATERIAL}"></ng-container>
+            </td>
+            @if (settings.calculation.seperateManufacturingAssembly) {
+              <td class="text-right whitespace-no-wrap">
+                <ng-container *ngTemplateOutlet="renderGroupPriceText; context: { item: parent, attributeName: AttributeName.PRICE_MANUFACTURING }"></ng-container>
+              </td>
+              <td class="text-right whitespace-no-wrap">
+                <ng-container *ngTemplateOutlet="renderGroupPriceText; context: { item: parent, attributeName: AttributeName.PRICE_ASSEMBLY }"></ng-container>
+              </td>
+            } @else {
+              <td class="text-right whitespace-no-wrap">
+                <ng-container *ngTemplateOutlet="renderGroupPriceText; context: { item: parent, attributeName: AttributeName.PRICE_EFFORD }"></ng-container>
+              </td>
+            }
+            <td></td>
+          </tr>
+          <tr>
+            <td colspan="2" class="text-right whitespace-no-wrap">{{ 'pipefittings.result.grandtotal' | i18next }}</td>
+            <td [attr.colspan]="settings.calculation.seperateManufacturingAssembly ? 2 : 1"></td>
+            <td class="text-right whitespace-no-wrap">
+              @if ((parent | getItemAttribute : AttributeName.IS_CALCULATING) || (parent | getItemAttribute : AttributeName.IS_PROCESSING)) {
+                <p-progressSpinner strokeWidth="6"></p-progressSpinner>
+              } @else {
+                @if (!(parent | getItemAttribute : AttributeName.IS_CALCULATED)) {
+                  <i class="pi pi-exclamation-circle mr-1" [pTooltip]="'tooltip.unfinished-info' | i18next"></i>
+                }
+                @if(unitPriceService.isUnitPriceViewActive) {
+                  {{'-'}} 
+                }@else {
+                  {{ (($any(parent | getItemAttribute : AttributeName.PRICE_TOTAL) | number : '1.2-2') ?? '-') + ' ' + settings.currency.symbol }}
+                }
+              }
+            </td>
+            <td></td>
+          </tr>
+        </ng-template>
+      }
+    </p-table>
+  </ng-template>
+
+  <ng-template #renderItemWrapper let-parent="parent" let-level="level">
+    @if (getStructureByCategory(parent.contains); as itemStructure) {
+      <p-table
+        #table
+        [value]="parent.items"
+        dataKey="id"
+        selectionMode="single"
+        [(selection)]="selectedItem"
+        class="fixed-layout"
+        (onRowReorder)="onRowReorder($event)"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th width="40px"></th>
+            @for (itemColumn of itemStructure.columns; track itemColumn.itemKey) {
+              <th
+                [width]="itemColumn.width ?? ''"
+                [pTooltip]="itemColumn.i18nTooltip ? (itemColumn.i18nTooltip | i18next) : undefined"
+                [ngClass]="{ 'text-right': itemColumn.type === 'number' }"
+              >
+                <span [ngStyle]="{
+                  'padding-left': itemColumn.type !== 'number' ? '0.75rem' : '',
+                  'padding-right': itemColumn.type === 'number' ? '0.75rem' : ''
+                }"
+                class="whitespace-no-wrap">
+                  {{ itemColumn.i18nTitle | i18next : { currencySymbol: settings.currency.symbol} }}
+                </span>
+              </th>
+            }
+            <th></th>
+            <th
+              width="140px" 
+              class="text-right whitespace-no-wrap"
+            >
+              {{ "pipefittings.column.price.material" | i18next }}
+            </th>
+            @if (itemStructure.manufacturingSplit && settings.calculation.seperateManufacturingAssembly) {
+              <th
+                width="140px"
+                class="text-right whitespace-no-wrap"
+              >
+                {{ 'pipefittings.column.price.manufacturing' | i18next }}
+              </th>
+              <th
+                  width="140px"
+                  class="text-right whitespace-no-wrap"
+              >
+                {{ 'pipefittings.column.price.assembly' | i18next }}
+              </th>
+            } @else {
+              <th
+                width="140px"
+                class="text-right whitespace-no-wrap"
+              >
+                {{ 'pipefittings.column.price.efford' | i18next }}
+                <i class="pi pi-exclamation-circle" [pTooltip]="'tooltip.efford-info' | i18next"></i>
+              </th>
+            }
+            <th width="120px"></th>
+          </tr>
+        </ng-template>
+        <ng-template
+          pTemplate="body"
+          let-item
+          let-expanded="expanded"
+          let-rowIndex="rowIndex"
+        >
+          <tr
+            class="cursor-pointer"
+            [pRowToggler]="item"
+            [pReorderableRow]="rowIndex"
+            [pSelectableRow]="item"
+          >
+            <td class="py-0">
+              <div class="flex flex-row align-items-center justify-content-center">
+                <span class="pi pi-bars" pReorderableRowHandle></span>
+              </div>
+            </td>
+            @for (itemColumn of itemStructure.columns; track itemColumn.itemKey) {
+              <td class="py-0">
+                <app-control-calculation-cell
+                  [itemColumn]="itemColumn"
+                  [item]="item"
+                  [(model)]="item[itemColumn.itemKey]"
+                  [updateTrigger]="item['typeId']"
+                  (modelChange)="onCellValueChanged(item, itemColumn.itemKey)"
+                ></app-control-calculation-cell>
+              </td>
+            }
+            <td class="py-0"></td>
+            <td class="text-right py-0">
+              @if ((item | getItemAttribute : AttributeName.IS_CALCULATING) || (item | getItemAttribute : AttributeName.IS_PROCESSING)) {
+                <p-progressSpinner strokeWidth="4"></p-progressSpinner>
+              } @else {
+                <ng-container *ngTemplateOutlet="priceMaterial; context: { item: item }"></ng-container>
+              }
+            </td>
+            @if (itemStructure.manufacturingSplit && settings.calculation.seperateManufacturingAssembly) {
+              <td class="text-right py-0">
+                @if ((item | getItemAttribute : AttributeName.IS_CALCULATING) || (item | getItemAttribute : AttributeName.IS_PROCESSING)) {
+                  <p-progressSpinner strokeWidth="4"></p-progressSpinner>
+                } @else {
+                  <ng-container *ngTemplateOutlet="priceManufacturing; context: { item: item }"></ng-container>
+                }
+              </td>
+              <td class="text-right py-0">
+                @if ((item | getItemAttribute : AttributeName.IS_CALCULATING) || (item | getItemAttribute : AttributeName.IS_PROCESSING)) {
+                  <p-progressSpinner strokeWidth="4"></p-progressSpinner>
+                } @else {
+                  <ng-container *ngTemplateOutlet="priceAssembly; context: { item: item }"></ng-container>
+                }
+              </td>
+            }
+            @else {
+              <td class="text-right py-0">
+                @if ((item | getItemAttribute : AttributeName.IS_CALCULATING) || (item | getItemAttribute : AttributeName.IS_PROCESSING)) {
+                  <p-progressSpinner strokeWidth="4"></p-progressSpinner>
+                } @else {
+                  <ng-container *ngTemplateOutlet="priceEfford; context: { item: item }"></ng-container>
+                }
+              </td>
+            }
+            <td class="py-0">
+              <div class="flex flex-row gap-2 justify-content-end">
+                <div>
+                  <ng-container *ngTemplateOutlet="infoAction; context: { item: item }"></ng-container>
+                </div>
+                <p-button
+                  icon="pi pi-copy"
+                  [raised]="true"
+                  [rounded]="true"
+                  severity="secondary"
+                  size="small"
+                  class="action-button"
+                  [pTooltip]="'tooltip.duplicate' | i18next"
+                  tooltipPosition="bottom"
+                  (onClick)="duplicateItem(item)"
+                ></p-button>
+                <p-button
+                  icon="pi pi-times-circle"
+                  [raised]="true"
+                  [rounded]="true"
+                  severity="danger"
+                  size="small"
+                  class="action-button"
+                  [pTooltip]="'tooltip.remove' | i18next"
+                  tooltipPosition="bottom"
+                  (onClick)="removeItem(item)"
+                ></p-button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    }
+    <div class="w-full mb-5">
+      <p-button
+        class="w-full"
+        severity="primary"
+        (onClick)="addItem(parent)"
+        size="small"
+      >
+        <span class="pi pi-plus"></span>
+        <span class="ml-2">{{ 'button.add-item' | i18next }}</span>
+      </p-button>
+    </div>
+  </ng-template>
+
+  @if (itemService.rootGroup; as rootGroup) {
+    <ng-container
+      *ngTemplateOutlet="
+        renderGroupWrapper;
+        context: { parent: rootGroup, level: 0, showHeader: true }
+      "
+    ></ng-container>
+    <div class="flex overflow-hidden mt-3">
+      <span class="text-xs flex-none flex">{{ 'disclaimer.info' | i18next }}</span>
+      <span class="text-xs flex-grow-1 flex"></span>
+      <span class="flex-none flex text-400 pr-2">Version {{ version }}</span>
+      <a class="flex text-400 cursor-pointer no-underline hover:text-primary  hover:underline" *ngIf="showDocs" [routerLink]="'docs'">View Documentation</a>
+    </div>
+  }
+}

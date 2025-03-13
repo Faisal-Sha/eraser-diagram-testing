@@ -1,0 +1,38 @@
+# 1️⃣ Build-Stage: Erstellt die API-Anwendung
+FROM --platform=linux/amd64 node:18-alpine AS builder
+
+WORKDIR /app
+
+# Kopiere nur package.json & package-lock.json für besseren Caching-Effekt
+COPY api/package.json api/package-lock.json ./
+
+# Installiere Produktionsabhängigkeiten
+RUN npm install --omit=dev
+
+# Kopiere den restlichen Code
+COPY api/ ./api
+
+# Kopiere common Code
+COPY common/ ./common
+
+# Baue die API
+WORKDIR /app/api
+RUN npm install @nestjs/cli && npm run build
+
+# 2️⃣ Laufzeit-Stage: Schlankes Production-Image
+FROM --platform=linux/amd64 node:18-alpine
+
+ENV NODE_ENV=production
+
+USER node
+
+WORKDIR /app
+
+# Kopiere nur das, was für die Laufzeit benötigt wird
+COPY --from=builder --chown=node:node /app/dist ./dist
+COPY --from=builder --chown=node:node /app/node_modules ../node_modules
+
+WORKDIR /app/dist/api
+
+# Setze Entrypoint
+ENTRYPOINT ["node", "src/main.js"]

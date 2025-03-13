@@ -1,0 +1,114 @@
+api:
+  deployment:
+    replicas: 1
+  
+    imagePullSecrets:
+      - name: pipe-calculation-registry
+
+    revisionHistoryLimit: 2
+    image:
+      repository: registry.git.schro.dev/engify/tools/pipe-calculation/api
+      tag: latest
+      pullPolicy: IfNotPresent
+
+    containerSecurityContext:
+      readOnlyRootFilesystem: false
+      runAsNonRoot: false
+
+    tolerations:
+      - key: "node.kubernetes.io/server-usage"
+        operator: "Equal"
+        value: "development"
+        effect: "NoSchedule"
+
+    nodeSelector:
+      "node.kubernetes.io/server-usage": development
+
+    resources:
+      limits:
+        memory: 256Mi
+        cpu: 0.5
+      requests:
+        memory: 128Mi
+        cpu: 0.1
+    ports:
+      - containerPort: 3000
+        name: http
+        protocol: TCP
+
+  service:
+    enabled: true
+    ports:
+      - port: 3000
+        name: http
+        protocol: TCP
+        targetPort: 3000
+    type: ClusterIP
+    clusterIP:
+
+  ingress:
+    enabled: true
+    ingressClassName: "traefik"
+    hosts:
+      - host: chart-example.local
+        paths:
+        - path: /api
+          pathType: ImplementationSpecific
+          servicePort: "http"
+        - path: /
+          pathType: ImplementationSpecific
+          servicePort: "http"
+    annotations:
+    # tls:
+    #   - secretName: dev-wildcard-certificate
+    #     hosts:
+    #       - chart-example.local
+
+
+frontend:
+  deployment:
+    replicas: 1
+  
+    imagePullSecrets:
+      - name: pipe-calculation-registry
+
+    revisionHistoryLimit: 2
+    image:
+      repository: registry.git.schro.dev/engify/tools/pipe-calculation/frontend
+      tag: latest
+      pullPolicy: IfNotPresent
+
+    containerSecurityContext:
+      readOnlyRootFilesystem: false
+      runAsNonRoot: false
+
+    tolerations:
+      - key: "node.kubernetes.io/server-usage"
+        operator: "Equal"
+        value: "development"
+        effect: "NoSchedule"
+
+    nodeSelector:
+      "node.kubernetes.io/server-usage": development
+
+    resources:
+      limits:
+        memory: 256Mi
+        cpu: 0.5
+      requests:
+        memory: 128Mi
+        cpu: 0.1
+    ports:
+      - containerPort: 80
+        name: http
+        protocol: TCP
+
+  service:
+    enabled: true
+    ports:
+      - port: 80
+        name: http
+        protocol: TCP
+        targetPort: 80
+    type: ClusterIP
+    clusterIP:

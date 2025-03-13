@@ -1,0 +1,356 @@
+@if (form) {
+  <form [formGroup]="form">
+    <ng-container>
+      <p-accordion
+        #helpAccordion
+        class="block mb-2"
+        [ngClass]="{ 'is-activated': helpAccordionPartsActivated }"
+      >
+        <p-accordionTab [selected]="helpAccordionPartsActivated">
+          <ng-template pTemplate="header" (click)="toggleComponentAccordion()">
+            <div class="flex-row align-items-left py-4">
+              <span class="text-xl font-bold">{{
+                "accordion.parts.title" | i18next
+              }}</span>
+              <i
+                class="ml-2 pi pi-info-circle"
+                [tooltipStyleClass]="'largeTooltipText'"
+                [pTooltip]="'accordion.parts.info' | i18next"
+              ></i>
+            </div>
+          </ng-template>
+
+          <div class="flex-column">
+            <span class="pl-3 font-bold p-2 pb-5 text-l">{{
+              "accordion.parts.preset.title" | i18next
+            }}</span>
+          
+            @if (selectedPreset) {
+              <div class="p-2 pb-5 flex align-items-center w-full">
+                <p-dropdown class="flex flex-auto pr-1" [options]="$any(presetOptions$ | async)" (onChange)="selectPreset($event.value)" formControlName="usedPresetId" optionLabel="label" optionValue="id"></p-dropdown>
+                <p-button class="p-1" type="button" severity="secondary" (click)="duplicatePreset()">
+                  <span>
+                    <i
+                      class="pi pi-copy"
+                      [pTooltip]="'accordion.parts.preset.button.duplicate' | i18next"
+                      tooltipPosition="top"
+                    ></i>
+                  </span>
+                </p-button>
+                <p-button class="p-1" type="button" severity="secondary" [disabled]="!selectedPresetEditable" (click)="renamePreset()">
+                  <span>
+                    <i
+                      class="pi pi-pencil"
+                      [pTooltip]="'accordion.parts.preset.button.edit' | i18next"
+                      tooltipPosition="top"
+                    ></i>
+                  </span>
+                </p-button>
+                <p-button class="p-1" type="button" severity="danger" [disabled]="!selectedPresetEditable" (click)="deletePreset()">
+                  <span>
+                    <i
+                      class="pi pi-times-circle"
+                      [pTooltip]="'accordion.parts.preset.button.remove' | i18next"
+                      tooltipPosition="top"
+                    ></i>
+                  </span>
+                </p-button>
+              </div>
+            }
+          </div>
+
+          <p-table [value]="getPresetPartsControls()">
+            <ng-template pTemplate="header">
+              <tr>
+                <th style="width: 280px" class="flex-row text-left">
+                  {{ "accordion.parts.table.item" | i18next }}
+                </th>
+                <th style="width: 280px" class="flex-row text-left">
+                  {{ "accordion.parts.table.material" | i18next }}
+                </th>
+                <th colspan="3" style="width: 50%" class="flex-row text-left">
+                  {{ "accordion.parts.table.length" | i18next }}
+                </th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-control let-rowIndex="rowIndex">
+              <tr [formGroup]="control">
+                <td class="flex-row w-50 align-items-left">
+                  @if ((("" | getItemSuggestions : 'typeId') | async); as suggestions) {
+                    <p-dropdown
+                      class="w-full"
+                      appendTo="body"
+                      [options]="suggestions"
+                      formControlName="typeId"
+                      [group]="true"
+                      optionValue="value"
+                      optionLabel="label"
+                      [placeholder]="'accordion.parts.input.pipefitting' | i18next"
+                      (ngModelChange)="control.get('material').setValue(null) || control.get('material').enable()"
+                    >
+                      <ng-template pTemplate="selectedItem">
+                        {{ suggestions | getSuggestionLabel: control.value.typeId }}
+                      </ng-template>
+                    </p-dropdown>
+                  } @else {
+                    <p-progressSpinner styleClass="w-2rem h-2rem" strokeWidth="8px"></p-progressSpinner>
+                  }
+                  @if (control.hasError('required', 'typeId') && !control.get('typeId')?.untouched) {
+                    <p-message
+                      @fadeInOut
+                      severity="error"
+                      [text]="'accordion.parts.validation.invalid-pipefitting' | i18next"
+                    ></p-message>
+                  }
+                </td>
+                <td class="flex-row w-50 align-items-left">
+                  @if (((control.value.typeId | getItemSuggestions : 'material') | async); as suggestions) {
+                    <p-dropdown
+                      class="w-full"
+                      appendTo="body"
+                      [options]="suggestions"
+                      formControlName="material"
+                      [group]="true"
+                      optionValue="value"
+                      optionLabel="label"
+                      [placeholder]="'accordion.parts.input.material' | i18next"
+                    >
+                      <ng-template pTemplate="selectedItem">
+                        {{ suggestions | getSuggestionLabel: control.value.material }}
+                      </ng-template>
+                    </p-dropdown>
+                  } @else {
+                    <p-progressSpinner styleClass="w-2rem h-2rem" strokeWidth="8px"></p-progressSpinner>
+                  }
+                  @if (control.hasError('required', 'material') && !control.get('material')?.untouched) {
+                    <p-message
+                      @fadeInOut
+                      severity="error"
+                      [text]="'accordion.parts.validation.invalid-material' | i18next"
+                    ></p-message>
+                  }
+                </td>
+                <td>
+                  <p-inputGroup class="p-float-label" class="w-full">
+                    <p-inputNumber
+                      mode="decimal"
+                      locale="de-DE"
+                      [minFractionDigits]="0"
+                      [maxFractionDigits]="2"
+                      formControlName="quantity"
+                      [placeholder]="'accordion.parts.input.quantity' | i18next"
+                    ></p-inputNumber>
+                    <p-inputGroupAddon [ngStyle]="{ width: '24px' }">
+                      {{ getI18NQuantitySuffix(control.value.typeId) | i18next }}
+                    </p-inputGroupAddon>
+                  </p-inputGroup>
+                  @if (control.hasError('required', 'quantity') && !control.get('quantity')?.untouched) {
+                    <p-message
+                      @fadeInOut
+                      severity="error"
+                      [text]="'accordion.parts.validation.invalid-quantity' | i18next"
+                    ></p-message>
+                  }
+                </td>
+                <td>
+                  <p-inputSwitch
+                    [pTooltip]="
+                      control.value.active
+                        ? ('accordion.parts.tooltip.deactivate' | i18next)
+                        : ('accordion.parts.tooltip.activate' | i18next)
+                    "
+                    tooltipPosition="top"
+                    appendTo="body"
+                    formControlName="active"
+                  ></p-inputSwitch>
+                </td>
+                <td>
+                  <p-button
+                    appendTo="body"
+                    size="small"
+                    severity="danger"
+                    [disabled]="!selectedPresetEditable"
+                    (click)="deletePresetPart(rowIndex)"
+                  >
+                    <span>
+                      <i
+                        class="pi pi-times-circle"
+                        [pTooltip]="'accordion.parts.tooltip.remove' | i18next"
+                        tooltipPosition="top"
+                      ></i>
+                    </span>
+                  </p-button>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+          <p-button
+            class="inline-block mt-3 ml-3"
+            [label]="'accordion.parts.button.add' | i18next"
+            size="small"
+            severity="primary"
+            [icon]="'pi pi-plus-circle'"
+            [disabled]="!selectedPresetEditable"
+            (click)="addPresetPart()"
+          >
+          </p-button>
+        </p-accordionTab>
+      </p-accordion>
+      @for(control of getGroupsControls(); track control; let rowIndex = $index) {
+        <p-accordion
+          #helpAccordion
+          class="block mt-3 mb-3"
+          [formGroup]="control"
+          [ngClass]="{
+            'is-activated': helpAccordionGroupsActivated && helpAccordionGroupsActivated[rowIndex]
+          }"
+        >
+          <p-accordionTab
+            [selected]="helpAccordionGroupsActivated && helpAccordionGroupsActivated[rowIndex] || true"
+          >
+            <ng-template
+              pTemplate="header"
+              (click)="toggleConfigAccordion(rowIndex)"
+            >
+              <div class="flex-row align-items-center justify-content-start py-4">
+                <span class="text-xl font-bold">{{ !control.value.name ? ("accordion.groups.title" | i18next) : control.value.name }}</span>
+                <i
+                  class="pi pi-info-circle ml-2"
+                  [tooltipStyleClass]="'largeTooltipText'"
+                  [pTooltip]="'accordion.groups.info' | i18next"
+                ></i>
+              </div>
+              <div
+                class="flex-row align-items-center justify-content-end"
+                style="margin-left: auto"
+              >
+                <p-button
+                  appendTo="body"
+                  size="small"
+                  severity="danger"
+                  class="reducedHeight"
+                  (click)="deleteGroup($event, rowIndex)"
+                >
+                  <span>
+                    <i
+                      class="pi pi-times-circle"
+                      [pTooltip]="'accordion.groups.tooltip.remove' | i18next"
+                      tooltipPosition="top"
+                    ></i>
+                  </span>
+                </p-button>
+              </div>
+            </ng-template>
+
+            <ng-template pTemplate="body">
+              <div
+                class="flex flex-row pb-3 px-3 pt-0 align-items-center"
+                style="border-bottom: solid lightgrey 1px"
+              >
+                <div class="w-full">
+                  <input
+                    [placeholder]="'accordion.groups.placeholder.name' | i18next"
+                    formControlName="name"
+                    class="w-full flex"
+                    type="text"
+                    pInputText
+                  />
+                  @if (control.hasError('required', 'name') && !control.get('name')?.untouched) {
+                    <p-message
+                      @fadeInOut
+                      severity="error"
+                      [text]="'accordion.groups.validation.invalid-config-name' | i18next"
+                    ></p-message>
+                  }
+                </div>
+              </div>
+              <div class="flex flex-row">
+                <div class="flex w-4 p-3 pb-0 w-full">
+                  {{ "accordion.groups.input.length.title" | i18next }}
+                </div>
+                <div class="flex w-4 p-3 pb-0 w-full">
+                  {{ "accordion.groups.input.dn.title" | i18next }}
+                </div>
+                <div class="flex w-4 p-3 pb-0 w-full">
+                  {{ "accordion.groups.input.s.title" | i18next }}
+                </div>
+              </div>
+              <div class="flex flex-row">
+                <div class="w-4 p-3 pt-2">
+                  <input
+                    formControlName="length"
+                    [placeholder]="'accordion.groups.input.length.placeholder' | i18next"
+                    class="w-full"
+                    type="number"
+                    pInputText
+                  />
+                  @if (control.hasError('required', 'length') && !control.get('length')?.untouched) {
+                    <p-message
+                      @fadeInOut
+                      severity="error"
+                      [text]="'accordion.groups.validation.invalid-config-length' | i18next"
+                    ></p-message>
+                  }
+                </div>
+                <div class="w-4 p-3 pt-2">
+                  <p-dropdown
+                    class="w-full"
+                    appendTo="body"
+                    [options]="dnOptions"
+                    formControlName="dn"
+                    [placeholder]="'accordion.groups.input.dn.placeholder' | i18next"
+                    optionValue="value"
+                    optionLabel="label"
+                  >
+                    <ng-template pTemplate="selectedItem">
+                      {{ dnOptions | getSuggestionLabel: control.value.dn }}
+                    </ng-template>
+                  </p-dropdown>
+                  @if (control.hasError('required', 'dn') && !control.get('dn')?.untouched) {
+                    <p-message
+                      @fadeInOut
+                      severity="error"
+                      [text]="'accordion.groups.validation.invalid-config-dn' | i18next"
+                    ></p-message>
+                  }
+                </div>
+                <div class="w-4 p-3 pt-2">
+                  <p-dropdown
+                    class="w-full"
+                    appendTo="body"
+                    [options]="sOptions"
+                    formControlName="s"
+                    [placeholder]="'accordion.groups.input.s.placeholder' | i18next"
+                    optionValue="value"
+                    optionLabel="label"
+                  >
+                    <ng-template pTemplate="selectedItem" let-option>
+                      {{ sOptions | getSuggestionLabel: control.value.s }}
+                    </ng-template>
+                  </p-dropdown>
+                  @if (control.hasError('required', 's') && !control.get('s')?.untouched) {
+                    <p-message
+                      @fadeInOut
+                      severity="error"
+                      [text]="'accordion.groups.validation.invalid-config-dn' | i18next"
+                    ></p-message>
+                  }
+                </div>
+              </div>
+            </ng-template>
+          </p-accordionTab>
+        </p-accordion>
+      }
+
+      <p-button
+        class="inline-block"
+        [label]="'accordion.groups.button.add' | i18next"
+        size="small"
+        severity="primary"
+        [icon]="'pi pi-plus-circle'"
+        (click)="addGroup()"
+      >
+      </p-button>
+    </ng-container>
+  </form>
+}

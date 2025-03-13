@@ -1,0 +1,16 @@
+@if (selectedLanguage) {
+    <p-dropdown [options]="languageOptions" [(ngModel)]="selectedLanguage" optionLabel="name" [showClear]="true" [showClear]="false" [disabled]="disabled">
+        <ng-template pTemplate="selectedItem">
+            <div class="flex align-items-center gap-2">
+                <img src="/assets/images/flags/placeholder.png" [class]="'flag flag-' + selectedLanguage" style="width: 18px" />
+                <div>{{ supportedLanguages[selectedLanguage] }}</div>
+            </div>
+        </ng-template>
+        <ng-template let-language pTemplate="item">
+            <div class="flex align-items-center gap-2">
+                <img src="/assets/images/flags/placeholder.png" [class]="'flag flag-' + language" style="width: 18px" />
+                <div>{{ supportedLanguages[language] }}</div>
+            </div>
+        </ng-template>
+    </p-dropdown>
+}

@@ -1,0 +1,10 @@
+:host {
+  display: block;
+  height: 400px;
+}
+
+:host ::ng-deep {
+  .p-scroller-content > tr {
+    height: 64px;
+  }
+}

@@ -1,0 +1,191 @@
+<form [formGroup]="form">
+  <div>
+    <div class="grid">
+      <div class="col-8">
+        @if(mode === CustomItemMode.CUSTOM_ITEM) {
+          <input pInputText class="p-inputtext w-full" [placeholder]="'input.name' | i18next" formControlName="name" />
+          @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
+            <p-message
+              @fadeInOut
+              severity="error"
+              [text]="'error:custom-item.required-attribute' | i18next"
+            ></p-message>
+          }
+        } @else if (mode === CustomItemMode.OVERRIDE_ITEM) {
+          @if (typeIdDummyItem | getItemSuggestions : 'typeId' : false | async; as suggestions) {
+            <p-dropdown 
+              [options]="suggestions"
+              [group]="true"
+              formControlName="typeId"
+              optionLabel="label"
+              optionValue="value"
+              [filter]="true"
+              filterBy="label" 
+              [showClear]="true"
+              appendTo="body"
+              (ngModelChange)="onTypeChange(suggestions)"
+              [placeholder]="'input.select' | i18next">
+            </p-dropdown>
+          } @else {
+            <p-progressSpinner styleClass="w-2rem h-2rem" strokeWidth="8px"></p-progressSpinner>
+          }
+          @if (form.get('typeId')?.hasError('duplicate') && form.get('typeId')?.touched) {
+            <p-message
+              @fadeInOut
+              severity="error"
+              [text]="'error:custom-item.duplicate-typeid' | i18next"
+            ></p-message>
+          }
+        }
+      </div>
+      <div class="col-4">
+        <p-dropdown class="block w-full" appendTo="body" [options]="unitOptions" formControlName="unit" [placeholder]="'input.units' | i18next" optionLabel="label" optionValue="value"></p-dropdown>
+      </div>
+    </div>
+
+    @if (specificationControls) {
+      <p-table [value]="specificationControls" class="fixed-layout">
+        <ng-template pTemplate="header">
+          <tr>
+            @for (itemColumn of itemColumns; track $index) {
+              <th [style]="{ width: itemColumn.width ? itemColumn.width + 'px' : '' }">{{ itemColumn.i18nTitle | i18next }}</th>
+            }
+            <th width="160px">{{ 'conditions.weight' | i18next }}</th>
+            <th width="160px">{{ 'conditions.material' | i18next : { currencySymbol: settings.currency.symbol} }}</th>
+            <th width="160px">{{ 'conditions.efford' | i18next }}</th>
+            <th width="120px"></th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-control let-rowIndex="rowIndex">
+          @if (control.hasError('duplicate') && control.touched) {
+            <tr>
+              <td [colSpan]="itemColumns.length + 3" class="pb-0 border-none">
+                <p-message
+                  @fadeInOut
+                  severity="error"
+                  [text]="'error:custom-item.duplicate-specification' | i18next"
+              ></p-message>
+              </td>
+            </tr>
+          }
+          @if (control.hasError('required') && control.touched) {
+            <tr>
+              <td [colSpan]="itemColumns.length + 3" class="pb-0 border-none">
+                <p-message
+                  @fadeInOut
+                  severity="error"
+                  [text]="'error:custom-item.one-attirbute-required' | i18next"
+              ></p-message>
+              </td>
+            </tr>
+          }
+          <tr [formGroup]="control">
+          
+            <ng-container [formGroup]="control.controls.columns">
+              @for (itemColumn of itemColumns; track $index) {
+                @if (mode === CustomItemMode.OVERRIDE_ITEM || itemColumn.itemKey === 'dn1' || itemColumn.itemKey === 'dn2') {
+                  <td class="pl-3">
+                    @if (mode === CustomItemMode.OVERRIDE_ITEM ? (dummyItems[rowIndex] | getItemSuggestions : itemColumn.itemKey | async) : dnOptions; as suggestions) {
+                      <p-dropdown 
+                      [formControlName]="itemColumn.itemKey" 
+                      class="w-full" 
+                      appendTo="body" 
+                      [placeholder]="getPlaceholder(itemColumn.i18nTitle)" 
+                      [options]="suggestions"
+                      optionLabel="label" 
+                      optionValue="value" 
+                      [group]="true"
+                      [showClear]="mode === CustomItemMode.CUSTOM_ITEM"
+                      (ngModelChange)="updateNextControls(rowIndex, control, itemColumn)">
+                      <ng-template pTemplate="selectedItem">
+                        {{ suggestions | getSuggestionLabel: control.controls.columns.value[itemColumn.itemKey] }}
+                      </ng-template>
+                    </p-dropdown>
+                    @if (control.get('columns.' + itemColumn.itemKey)?.hasError('required') && control.get('columns.' + itemColumn.itemKey)?.touched) {
+                      <p-message
+                        @fadeInOut
+                        severity="error"
+                        [text]="'error:custom-item.required-attribute' | i18next"
+                      ></p-message>
+                    }
+                  } @else {
+                    <p-progressSpinner styleClass="w-2rem h-2rem" strokeWidth="8px"></p-progressSpinner>
+                  }
+                  </td>
+                } @else if(mode === CustomItemMode.CUSTOM_ITEM) {
+                  <td class="pl-3">
+                    <input pInputText [formControlName]="itemColumn.itemKey" class="w-full" [placeholder]="itemColumn.i18nTitle | i18next" (ngModelChange)="updateNextControls(rowIndex, control, itemColumn)">
+                    @if (control.get('columns.' + itemColumn.itemKey)?.hasError('required') && control.get('columns.' + itemColumn.itemKey)?.touched) {
+                      <p-message
+                        @fadeInOut
+                        severity="error"
+                        [text]="'error:custom-item.required-attribute' | i18next"
+                      ></p-message>
+                    }
+                  </td>
+                }
+              }
+            </ng-container>
+
+            <ng-container [formGroup]="control.get('attributes')">
+              <td class="pl-3">
+                <p-inputNumber [formControlName]="AttributeName.WEIGHT" mode="decimal" [maxFractionDigits]="4" class="w-full" />
+                @if (control.get('attributes.' + AttributeName.WEIGHT)?.hasError('required') && control.get('attributes.' + AttributeName.WEIGHT)?.touched) {
+                  <p-message
+                    @fadeInOut
+                    severity="error"
+                    [text]="'error:custom-item.required-attribute' | i18next"
+                  ></p-message>
+                }
+              </td>
+
+              <td class="pl-3">
+                <p-inputNumber [formControlName]="AttributeName.PRICE_MATERIAL" mode="decimal" [maxFractionDigits]="4" class="w-full" />
+                @if (control.get('attributes.' + AttributeName.PRICE_MATERIAL)?.hasError('required') && control.get('attributes.' + AttributeName.PRICE_MATERIAL)?.touched) {
+                  <p-message
+                    @fadeInOut
+                    severity="error"
+                    [text]="'error:custom-item.required-attribute' | i18next"
+                  ></p-message>
+                }
+              </td>
+
+              <td class="pl-3">
+                <p-inputNumber [formControlName]="AttributeName.EFFORD_HOURS" mode="decimal" [maxFractionDigits]="4" class="w-full" />
+                @if (control.get('attributes.' + AttributeName.EFFORD_HOURS)?.hasError('required') && control.get('attributes.' + AttributeName.EFFORD_HOURS)?.touched) {
+                  <p-message
+                    @fadeInOut
+                    severity="error"
+                    [text]="'error:custom-item.required-attribute' | i18next"
+                  ></p-message>
+                }
+              </td>
+            </ng-container>
+
+            <td>
+              <div class="flex-row">
+                <p-button class="mr-2" size="small" severity="secondary" [pTooltip]="'conditions.tooltip.duplicate' | i18next" tooltipPosition="top" (onClick)="duplicateSpecification(rowIndex)">
+                  <i class="pi pi-copy"></i>
+                </p-button>
+                <p-button size="small" severity="danger" [pTooltip]="'conditions.tooltip.remove' | i18next" tooltipPosition="top" (onClick)="deleteSpecification(rowIndex)">
+                  <i class="pi pi-times-circle"></i>
+                </p-button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+
+      </p-table>
+    }
+
+  </div>
+
+  <div class="buttons-container flex flex-column gap-2 mt-4">
+    <p-button [raised]="true" type="button" size="small" severity="primary" [disabled]="mode === CustomItemMode.OVERRIDE_ITEM && (!form.get('typeId')?.value || form.get('typeId')?.hasError('duplicate'))" (onClick)="addSpecification()">
+      <i class="pi pi-plus-circle mr-2"></i>
+      {{ 'button.add' | i18next }}
+    </p-button>
+  </div>
+
+</form>

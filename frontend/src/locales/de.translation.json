@@ -1,0 +1,784 @@
+{
+  "pipefittings": {
+    "group": {
+      "typeId": {
+        "pipe": "Rohr",
+        "elbow": "Rohrbogen",
+        "tee": "T-Stück",
+        "reduction": "Reduzierung",
+        "cap": "Kappe",
+        "flange-pn10": "Flange PN10",
+        "flange-pn16": "Flange PN16",
+        "flange-pn25": "Flange PN25",
+        "flange-pn40": "Flange PN40",
+        "Custom": "Eigene Bauteile"
+      },
+      "material": {
+        "N": "Normalstahl",
+        "S": "Edelstahl",
+        "Custom": "Eigene Werkstoffe"
+      },
+      "dn1": {
+        "Custom": "Eigene Nennweiten",
+        "Default": "Standard"
+      },
+      "s1": {
+        "Custom": "Eigene Wandstärken",
+        "Default": "Standard"
+      },
+      "dn2": {
+        "Custom": "Eigene Nennweiten",
+        "Default": "Standard"
+      },
+      "s2": {
+        "Custom": "Eigene Wandstärken",
+        "Default": "Standard"
+      }
+    },
+    "column": {
+      "price": {
+        "material": "Material",
+        "manufacturing": "Fertigung",
+        "assembly": "Montage",
+        "efford": "Fert. & Mont."
+      },
+      "quantity": "Menge",
+      "typeId": "Bauteil",
+      "material": "Werkstoff",
+      "dn1": "DN1",
+      "dn2": "DN2",
+      "s1": "S1",
+      "s2": "S2",
+      "standard": "Standard"
+    },
+    "result": {
+      "subtotal": "Zwischensumme (netto)",
+      "grandtotal": "Gesamt (netto)"
+    }
+  },
+  "components": {
+    "controls": {
+      "actions": {
+        "button": {
+          "add": "Hinzufügen",
+          "quickmto": "Schnell-MTO"
+        },
+        "tooltip": {
+          "settings": "Einstellungen",
+          "print": "Drucken",
+          "export": "Lokal speichern",
+          "import": "Importieren",
+          "reset": "Einträge leeren",
+          "activated-unit-price-view-button": "Einheitspreisansicht Deaktivieren",
+          "deactivated-unit-price-view-button": "Einheitspreisansicht Aktivieren"
+        },
+        "menu": {
+          "export": {
+            "title": "Lokal speichern als",
+            "json": "Backup-Datei",
+            "csv": "CSV-Datei"
+          },
+          "import": {
+            "title": "Importieren",
+            "json": "Backup-Datei",
+            "csv": "CSV-Datei"
+          },
+          "print": {
+            "title": "Druckansicht",
+            "with-prices": "Mit Preisen",
+            "without-prices": "Ohne Preise"
+          },
+          "add": {
+            "group": {
+              "title": "Eintrag hinzufügen",
+              "general": "Gruppierung",
+              "pipefittings": "Rohrleitung",
+              "services": "Dienstleistungen"
+            }
+          }
+        },
+        "confirmation": {
+          "reset": {
+            "title": "Einträge leeren",
+            "message": "Möchten Sie alle Einträge löschen?",
+            "accept": "Ja",
+            "reject": "Nein"
+          }
+        }
+      },
+      "calculation": {
+        "duplicate-name": "{{ name }} (Kopie)",
+        "tooltip": {
+          "column": {
+            "material": "Materialpreis des Bauteils in {{ currencySymbol }}",
+            "manufacturing": "Fertigung des Bauteils in {{ currencySymbol }}",
+            "assembly": "Montage des Bauteils in {{ currencySymbol }}",
+            "efford": "Fertigung & Montage des Bauteils in {{ currencySymbol }}"
+          },
+          "duplicate": "Duplizieren",
+          "remove": "Entfernen",
+          "info": "Informationen",
+          "unfinished-info": "Der Preis ist unvollständig, da nicht alle Einträge ausgefüllt sind.",
+          "efford-info": "Fertigung und Montage"
+        },
+        "button": {
+          "add-item": "Bauteil hinzufügen"
+        },
+        "cell": {
+          "placeholder": {
+            "quantity": "Menge",
+            "typeId": "Auswählen",
+            "material": "Auswählen",
+            "dn1": "Auswählen",
+            "dn2": "Auswählen",
+            "s1": "Auswählen",
+            "s2": "Auswählen"
+          }
+        },
+        "disclaimer": {
+          "info": "Wir übernehmen keine Haftung für die kalkulierten Preise."
+        },
+        "price-calculation": {
+          "part-information-title": "Bauteil-Eigenschaften",
+          "information": {
+            "engify-id": "Engify-ID",
+            "standard": "Norm",
+            "weight": "Gewicht"
+          },
+          "table-titles": {
+            "formulas": "Korrekturfaktoren",
+            "errors": "Fehlermeldungen",
+            "material-calculation": "Berechnung Material",
+            "general-calculation": "Preisberechnung",
+            "efford-mix-calculation": "Berechnung Fertigung & Montage",
+            "efford-manufacturing-calculation": "Berechnung Fertigung",
+            "efford-assembly-calculation": "Berechnung Montage",
+            "overview": "Übersicht",
+            "values": "Wert",
+            "quantity": "Anz.",
+            "step": "Aufmaßfaktoren",
+            "size": "Abmessung",
+            "efford": "Dauer",
+            "total": "Gesamt",
+            "split-manufacturing": "Davon Fertigung ({{ manufacturing }}%)",
+            "split-assembly": "Davon Montage ({{ assembly }}%)",
+            "applied-formulas": "Angewandte Korrekturfaktoren",
+            "calculation-per-unit": "Berechnung pro Stück",
+            "no-formula-text": "Es werden keine Korrekturen vorgenommen.<br>Sie können bei Einstellungen > Korrekturfaktoren<br>Ihre eigenen Preise hinterlegen."
+          },
+          "tooltips": {
+            "show-calculation": "Berechnung anzeigen",
+            "applied-formulas": "Die folgenden Korrekturfaktoren werden in der angegebenen Reihenfolge angewandt und überschreiben das vorherige Ergebnis."
+          },
+          "texts": {
+            "efford-mix": "Der Preis ergibt sich durch die Multiplikation von <span class=\"font-bold\">Dauer ({{ efford }} Stunden)</span> und <span class=\"font-bold\">Mischstundensatz ({{ price }})</span>.",
+            "efford-manufacturing": "Der Preis ergibt sich durch die Multiplikation von <span class=\"font-bold\">Dauer ({{ efford }} Stunden)</span> und <span class=\"font-bold\">Stundensatz Fertigung ({{ price }})</span>.",
+            "efford-assembly": "Der Preis ergibt sich durch die Multiplikation von <span class=\"font-bold\">Dauer ({{ efford }} Stunden)</span> und <span class=\"font-bold\">Stundensatz Montage ({{ price }})</span>."
+          },
+          "factors": {
+            "description": {
+              "UNIT_PRICE": "Einheitspreis [{{ currencySymbol }}/kg]",
+              "MATERIAL_SURCHARGE": "Materialzuschlag",
+              "FORM_FACTOR": "Formfaktor",
+              "WEIGHT": "Gewicht [kg/{{ unit }}]",
+              "QUANTITY": "Menge",
+              "CUSTOM_MATERIAL_PRICE": "Konfigurierter Materialpreis"
+            },
+            "parameter": {
+              "UNIT_PRICE": "Einheitspreis",
+              "MATERIAL_SURCHARGE": "Materialzuschlag",
+              "FORM_FACTOR": "Formfaktor",
+              "CUSTOM_MATERIAL_PRICE": "Konfigurierter Materialpreis",
+              "QUANTITY": "Menge",
+              "MENGE": "Menge",
+              "D1": "D1",
+              "S1": "S1",
+              "D2": "D2",
+              "S2": "S2",
+              "GEWICHT": "Gewicht",
+              "WEIGHT": "Gewicht",
+              "PREIS_MATERIAL": "Vorheriges Ergebnis",
+              "AUFWAND_STUNDEN": "Vorheriges Ergebnis"
+            }
+          },
+          "steps": {
+            "description": {
+              "handlingPipe": "Handling Rohr",
+              "layingPipe": "Basismontage",
+              "circularWeld": "Rundnaht schweißen",
+              "fitting2End": "Basismontage",
+              "fitting3End": "Basismontage",
+              "circularWeld1": "Rundnaht 1 schweißen",
+              "circularWeld2": "Rundnaht 2 schweißen",
+              "flangedConnection": "Basismontage",
+              "CUSTOM_EFFORD_HOURS": "Konfigurierter Aufwand"
+            },
+            "parameter": {
+              "PRICE_PER_HOUR": "Stundensatz",
+              "DURATION": "Dauer"
+            }
+          }
+        }
+      },
+      "metadata": {
+        "header": "Kopfdaten",
+        "input": {
+          "address": "Adresse",
+          "author": "Autor",
+          "date": "Datum",
+          "version": "Version",
+          "project": "Projekt",
+          "description": "Projektbeschreibung"
+        }
+      },
+      "quickfill": {
+        "title": "Schnell-MTO",
+        "button": {
+          "confirm": "Kalkulation erstellen",
+          "cancel": "Speichern und schließen"
+        },
+        "accordion": {
+          "parts": {
+            "title": "Konfiguration (Muster-Isometrie)",
+            "info": "Definieren Sie, welche Bauteile in welcher Häufigkeit generiert werden sollen. Nutzen Sie unsere Voreinstellungen oder erstellen Sie Ihre eigenen.",
+            "preset": {
+              "title": "Voreinstellungen",
+              "isbl": "ISBL – Inside battery limit (Kernbereich Anlage)",
+              "osbl": "OSBL – Outside battery limit (Umfeldbereich Anlage)",
+              "menu": {
+                "add": "Neu hinzufügen"
+              },
+              "button": {
+                "edit": "Bearbeiten",
+                "remove": "Entfernen",
+                "duplicate": "Duplizieren"
+              },
+              "dialog": {
+                "new": {
+                  "title": "Neue Voreinstellung hinzufügen",
+                  "placeholder": "Name der Voreinstellung",
+                  "initial-value": "Neue Voreinstellung",
+                  "message": "Benennen Sie Ihre Voreinstellung",
+                  "button": {
+                    "confirm": "Hinzufügen",
+                    "cancel": "Zurück"
+                  }
+                },
+                "rename": {
+                  "title": "Voreinstellung umbenennen",
+                  "placeholder": "Name der Voreinstellung",
+                  "message": "Geben Sie den neuen Namen für die Voreinstellung an",
+                  "button": {
+                    "confirm": "Umbenennen",
+                    "cancel": "Zurück"
+                  }
+                },
+                "duplicate": {
+                  "title": "Voreinstellung duplizieren",
+                  "placeholder": "Name der Voreinstellung",
+                  "message": "Benennen Sie die Kopie der Voreinstellung",
+                  "initial-value": "{{ name }} (Kopie)",
+                  "button": {
+                    "confirm": "Hinzufügen",
+                    "cancel": "Zurück"
+                  }
+                },
+                "delete": {
+                  "title": "Voreinstellung löschen",
+                  "message": "Möchten Sie die Voreinstellung wirklich löschen?",
+                  "button": {
+                    "confirm": "Löschen",
+                    "cancel": "Abbrechen"
+                  }
+                }
+              }
+            },
+            "tooltip": {
+              "deactivate": "Deaktivieren",
+              "activate": "Aktivieren",
+              "remove": "Bauteil entfernen"
+            },
+            "input": {
+              "pipefitting": "Bauteil",
+              "material": "Werkstoff",
+              "quantity": "Anzahl"
+            },
+            "button": {
+              "add": "Hinzufügen"
+            },
+            "table": {
+              "item": "Erzeugte Bauteile",
+              "material": "Werkstoff",
+              "length": "pro 10m Gesamtlänge"
+            },
+            "validation": {
+              "invalid-pipefitting": "Pflichtfeld",
+              "invalid-material": "Pflichtfeld",
+              "invalid-quantity": "Pflichtfeld"
+            }
+          },
+          "groups": {
+            "title": "Rohrleitung",
+            "info": "Hier spezifizieren Sie Ihre geplante Rohrleitung.",
+            "button": {
+              "add": "Rohrleitung hinzufügen"
+            },
+            "tooltip": {
+              "remove": "Gruppe entfernen",
+              "deactivate": "Deaktivieren",
+              "activate": "Aktivieren"
+            },
+            "placeholder": {
+              "name": "Name der Rohrleitung"
+            },
+            "input": {
+              "length": {
+                "title": "Gesamtlänge",
+                "placeholder": "in Meter"
+              },
+              "dn": {
+                "title": "Hauptnennweite",
+                "placeholder": "DN"
+              },
+              "s": {
+                "title": "Wandstärke",
+                "placeholder": "in mm"
+              },
+              "material": {
+                "title": "Werkstoff",
+                "placeholder": "Material"
+              }
+            },
+            "validation": {
+              "invalid-config-name": "Bitte benennen Sie die Rohrleitung",
+              "invalid-config-length": "Pflichtfeld",
+              "invalid-config-dn": "Pflichtfeld",
+              "invalid-config-s": "Pflichtfeld",
+              "invalid-config-material": "Pflichtfeld"
+            }
+          }
+        }
+      },
+      "settings": {
+        "title": "Einstellungen",
+        "button": {
+          "confirm": "Speichern",
+          "cancel": "Abbrechen"
+        },
+        "tabs": {
+          "general": "Allgemein",
+          "calculation": "Stundensätze",
+          "items-title": "Bauteile",
+          "override-items": "Überschreiben",
+          "service-items": "Dienstleistungen",
+          "add-items": "Hinzufügen",
+          "formulas": "Korrekturfaktoren"
+        },
+        "general": {
+          "language": "Sprache",
+          "logo": {
+            "info": "Hinterlegen Sie hier Ihr eigenes Logo für die Druckansicht",
+            "header": "Logo",
+            "upload-button": "Logo hochladen",
+            "reset-button": "Zurücksetzen",
+            "dialog": {
+              "upload-error": {
+                "title": "Fehler beim Hochladen",
+                "message": "Das Bild ist zu groß. Bitte wählen Sie ein Bild mit einer maximalen Größe von 1 MB.",
+                "button": {
+                  "accept": "Schließen"
+                }
+              }
+            }
+          },
+          "currency": {
+            "title": "Währung",
+            "info": "Wählen Sie die Währung für die Preisberechnung aus",
+            "description": "Nutzen Sie Ihre eigene Währung für die Preisberechnung. Der Wechselkurs wird für die Umrechnung der von uns vorgeschlagenen Materialpreise verwendet."
+          }
+        },
+        "hourly-rates": {
+          "panel": {
+            "split": {
+              "title": "Aufteilung in Fertigung & Montage",
+              "manufacturing": "Anteil Fertigung",
+              "assembly": "Anteil Montage",
+              "tooltip": {
+                "info": "Hier können Sie die Tabellen in Fertigung und Montage unterteilen",
+                "activate": "Aufteilung aktivieren",
+                "deactivate": "Aufteilung deaktivieren"
+              }
+            },
+            "rates": {
+              "title": {
+                "mixed": "Mischstundensatz",
+                "splitted": "Stundensätze"
+              },
+              "tooltip": {
+                "mixed": "Hier hinterlegen Sie Ihren Mischstundensatz für Fertigung und Montage",
+                "splitted": "Hier hinterlegen Sie Ihren Stundensatz für die Fertigung und Montage"
+              },
+              "input": {
+                "mixed": "Mischstundensatz",
+                "manufacturing": "Stundensatz Fertigung",
+                "assembly": "Stundensatz Montage"
+              }
+            }
+          },
+          "mixed-hourly-rate": {
+            "info": "Hier hinterlegen Sie Ihren Mischstundensatz für Fertigung und Montage",
+            "header": "Mischstundensatz"
+          },
+          "hourly-manufacturing-rate": {
+            "info": "Hier hinterlegen Sie Ihren Stundensatz für die Fertigung",
+            "header": "Stundensatz Fertigung"
+          },
+          "hourly-assembly-rate": {
+            "info": "Hier hinterlegen Sie Ihren Stundensatz für Montageleistungen",
+            "header": "Stundensatz Montage"
+          },
+          "manufacturing-assembly": {
+            "activate": "Aktivieren",
+            "deactivate": "Deaktivieren",
+            "info": "Hier können Sie die Tabellen in Fertigung und Montage unterteilen",
+            "header": "Aufteilung in Fertigung & Montage",
+            "manufacturing": "Fertigung",
+            "assembly": "Montage"
+          },
+          "validation": {
+            "mixed-hourly-rate": {
+              "required": "Bitte geben Sie einen Mischstundensatz ein",
+              "invalid": "Bitte geben Sie eine gültige Zahl ein"
+            },
+            "hourly-manufacturing-rate": {
+              "required": "Bitte geben Sie einen Stundensatz für die Fertigung ein",
+              "invalid": "Bitte geben Sie eine gültige Zahl ein"
+            },
+            "hourly-assembly-rate": {
+              "required": "Bitte geben Sie einen Stundensatz für die Montage ein",
+              "invalid": "Bitte geben Sie eine gültige Zahl ein"
+            }
+          }
+        },
+        "controls": {
+          "custom-item-list": {
+            "description": {},
+            "table-title": {
+              "override": "Übersicht der überschriebenen Bauteile",
+              "custom": "Übersicht der hinzugefügten Bauteile"
+            },
+            "tooltip": {
+              "edit": "Bearbeiten",
+              "duplicate": "Duplizieren",
+              "remove": "Entfernen",
+              "activate": "Aktivieren",
+              "deactivate": "Deaktivieren",
+              "override": "Hier können Sie die bereits vorhandenen Standardbauteile mit eigenen Preisen überschreiben.",
+              "custom": "Hier können Sie neue Bauteile mit verschiedenen Nennweiten hinzufügen. Diese sind dann auch in der Bauteil-Auswahl verfügbar."
+            },
+            "button": {
+              "add": "Hinzufügen"
+            },
+            "confirmation": {
+              "remove": {
+                "title": "Möchten Sie das Bauteil löschen?",
+                "message": "Dieser Vorgang kann nicht rückgängig gemacht werden.",
+                "accept": "Ja",
+                "reject": "Nein"
+              },
+              "remove-disabled": {
+                "title": "Das Bauteil kann nicht gelöscht werden",
+                "message": "Das Bauteil wird in der Kalkulation oder in einem Preset der Schnell-MTO verwendet und kann daher nicht gelöscht werden.",
+                "accept": "Schließen"
+              }
+            }
+          },
+          "custom-item-edit": {
+            "title": {
+              "override": {
+                "edit": "Überschriebenes Bauteil bearbeiten",
+                "create": "Bauteil überschreiben"
+              },
+              "custom": {
+                "edit": "Eigenes Bauteil bearbeiten",
+                "create": "Neues Bauteil hinzufügen"
+              }
+            },
+            "duplicate-name": "{{ name }} (Kopie)",
+            "button": {
+              "confirm": "Speichern",
+              "cancel": "Abbrechen",
+              "add": "Nennweite hinzufügen"
+            },
+            "input": {
+              "select": "Auswählen",
+              "units": "Einheit",
+              "name": "Bezeichnung des Bauteils"
+            },
+            "conditions": {
+              "title": "Preise",
+              "weight": "Gewicht [kg]",
+              "material": "Material [{{ currencySymbol }}]",
+              "efford": "Fertigung & Montage [h]",
+              "input": {
+                "weight": "Gewicht",
+                "material": "Material",
+                "efford": "Fertigung & Montage"
+              },
+              "tooltip": {
+                "info": "Fügen Sie hier Ihre individuellen Preise für die Bauteilspezifikateionen hinzu.",
+                "remove": "Entfernen",
+                "duplicate": "Duplizieren"
+              },
+              "button": {
+                "add": "Nennweite hinzufügen"
+              }
+            }
+          },
+          "formula-list": {
+            "table-title": "Übersicht der Korrekturfaktoren",
+            "duplicate-name": "{{ name }} (Kopie)",
+            "tooltip": {
+              "info": "Hinterlegen Sie eigene Korrekturfaktoren für Bauteile, die auf die definierten Bedingungen zutreffen und passen Sie die Preise für mehrere Bauteile gleichzeitig an.",
+              "edit": "Bearbeiten",
+              "duplicate": "Duplizieren",
+              "remove": "Entfernen",
+              "activate": "Aktivieren",
+              "deactivate": "Deaktivieren"
+            },
+            "button": {
+              "add": "Hinzufügen"
+            },
+            "confirmation": {
+              "remove": {
+                "title": "Möchten Sie den Korrekturfaktor löschen?",
+                "message": "Dieser Vorgang kann nicht rückgängig gemacht werden.",
+                "accept": "Ja",
+                "reject": "Nein"
+              }
+            }
+          },
+          "formula-edit": {
+            "title": {
+              "create": "Korrekturfaktor erstellen",
+              "edit": "Korrekturfaktor bearbeiten"
+            },
+            "button": {
+              "confirm": "Speichern",
+              "cancel": "Abbrechen"
+            },
+            "default": {
+              "name": "Neuer Korrekturfaktor"
+            },
+            "input": {
+              "name": "Name des Korrekturfaktors"
+            },
+            "tooltip": {
+              "activate": "Aktivieren",
+              "deactivate": "Deaktivieren"
+            },
+            "validation": {
+              "name-required": "Bitte geben Sie einen Namen für den Korrekturfaktor ein"
+            },
+            "panel": {
+              "conditions": {
+                "title": "Bedingungen",
+                "tooltip": {
+                  "info": "Legen Sie fest, unter welchen Bedingungen die untenstehenden Berechnungen angewendet werden sollen.",
+                  "remove": "Entfernen"
+                },
+                "button": {
+                  "add": "Bedingung hinzufügen"
+                },
+                "table": {
+                  "option": "Option",
+                  "operation": "Operation",
+                  "value": "Wert"
+                },
+                "placeholder": {
+                  "option": "Option auswählen",
+                  "operation": "Operation auswählen",
+                  "value": "Wert eingeben"
+                },
+                "options": {
+                  "quantity": "Menge",
+                  "type-id": "Bauteil",
+                  "dn1": "DN1",
+                  "dn2": "DN2",
+                  "s1": "S1",
+                  "s2": "S2",
+                  "material": "Werkstoff",
+                  "weight": "Gewicht"
+                },
+                "operations": {
+                  "eq": "Gleich",
+                  "neq": "Ungleich",
+                  "lt": "Kleiner",
+                  "lte": "Kleiner gleich",
+                  "gt": "Größer",
+                  "gte": "Größer gleich"
+                },
+                "validation": {
+                  "conditions-invalid": "Bitte füllen Sie alle Felder aus.",
+                  "conditions-overlapping": "Bedingung ist kann nicht eindeutig zugeordnet werden. Bitte prüfen Sie auf Übeschneidungen und Doppelbelegungen.",
+                  "conditions-minimum": "Bitte fügen Sie mindestens eine Bedingung hinzu."
+                }
+              },
+              "calculations": {
+                "title": "Berechnungen",
+                "tooltip": {
+                  "info": "Hinterlegen Sie eigene Berechnungen für die Preisermittlung und nutzten Sie hierbei die zur Verfügung stehenden Parameter.",
+                  "remove": "Entfernen"
+                },
+                "labels": {
+                  "material": "Berechnungsformel für den Materialpreis [{{ currencySymbol }}]",
+                  "efford": "Berechnungsformel für den Fertigungs- und Montageaufwand [h]",
+                  "efford-tooltip": "Das Ergebnis wird automatisch mit dem hinterlegten Stundensatz multipliziert"
+                },
+                "placeholder": {
+                  "material": "Keine Korrektur",
+                  "efford": "Keine Korrektur"
+                },
+                "validation": {
+                  "formula-invalid": "Die Berechnungsformel ist ungültig"
+                },
+                "info": {
+                  "title": "Parameter Formelberechnung",
+                  "label": {
+                    "math-symbols": "+ - * / ( )",
+                    "quantity": "MENGE",
+                    "d": "D1 / D2",
+                    "s": "S1 / S2",
+                    "weight": "GEWICHT",
+                    "efford": "AUFWAND_STUNDEN",
+                    "material": "PREIS_MATERIAL"
+                  },
+                  "value": {
+                    "math-symbols": "Diese Rechenzeichen können verwendet werden",
+                    "quantity": "Die angegebene Menge des Eintrags in den entsprechenden Einheiten",
+                    "d": "Der Anschluss-Außendurchmesser des Bauteils [mm]",
+                    "s": "Die Wandstärke des Bauteils [mm]",
+                    "weight": "Das Bauteilgewicht in Kilogramm",
+                    "efford": "Der Fertigungs- und Montageaufwand des Bauteils [h]",
+                    "material": "Der Materialpreis des Bauteils gemäß <a href=\"https://engify.de/hilfe/materialpreise\" target=\"_blank\">Einheitspreistabelle</a> [{{ currencySymbol }}]"
+                  }
+                }
+              }
+            }
+          },
+          "currency": {
+            "placeholder": {
+              "symbol": "Währungssymbol",
+              "rate": "Wechselkurs in €"
+            }
+          }
+        }
+      }
+    },
+    "print-page": {
+      "title": "Kalkulation",
+      "version": "Version",
+      "standard": "Norm"
+    },
+    "printPage": {
+      "logo-subtext": "Hier könnte Ihr Logo stehen",
+      "header": "Kalkulation",
+      "version": "Version",
+      "qty": "Menge",
+      "pipe-fitting": "Bauteil",
+      "standard": "Norm",
+      "dn1": "DN1",
+      "dn2": "DN2",
+      "thk1": "S1",
+      "thk2": "S2",
+      "material": "Werkstoff",
+      "installation": "Fertigung &<br>Montage [{{ currencySymbol }}]",
+      "manufacturing": "Fertigung",
+      "assembly": "Montage",
+      "delivery": "Material [{{ currencySymbol }}]",
+      "sub-total": "Zws.",
+      "grand-total": "Gesamt",
+      "info": "Wir übernehmen keine Haftung für die kalkulierten Kosten.",
+      "footer-text": "Kalkuliert mit einem Tool von Engify.de",
+      "page": "Seite"
+    }
+  },
+  "services": {
+    "import-export": {
+      "dialog": {
+        "override": {
+          "title": "Backup importieren",
+          "message": "Beim Importieren werden alle bestehenden Einträge und Einstellungen überschrieben.<br>Exportieren Sie vorher ein Backup, um den jetzigen Stand wiederherstellen zu können.",
+          "button": {
+            "confirm": "Importieren",
+            "cancel": "Abbrechen"
+          }
+        }
+      }
+    }
+  },
+  "calendar": {
+    "day-name": {
+      "sunday": "Sonntag",
+      "monday": "Montag",
+      "tuesday": "Dienstag",
+      "wednesday": "Mittwoch",
+      "thursday": "Donnerstag",
+      "friday": "Freitag",
+      "saturday": "Samstag"
+    },
+    "day-name-short": {
+      "sunday": "Son",
+      "monday": "Mon",
+      "tuesday": "Die",
+      "wednesday": "Mit",
+      "thursday": "Don",
+      "friday": "Fre",
+      "saturday": "Sam"
+    },
+    "day-name-min": {
+      "sunday": "So",
+      "monday": "Mo",
+      "tuesday": "Di",
+      "wednesday": "Mi",
+      "thursday": "Do",
+      "friday": "Fr",
+      "saturday": "Sa"
+    },
+    "month-name": {
+      "january": "Januar",
+      "february": "Februar",
+      "march": "März",
+      "april": "April",
+      "may": "Mai",
+      "june": "Juni",
+      "july": "Juli",
+      "august": "August",
+      "september": "September",
+      "october": "Oktober",
+      "november": "November",
+      "december": "Dezember"
+    },
+    "month-name-short": {
+      "january": "Jan",
+      "february": "Feb",
+      "march": "Mar",
+      "april": "Apr",
+      "may": "Mai",
+      "june": "Jun",
+      "july": "Jul",
+      "august": "Aug",
+      "september": "Sep",
+      "october": "Okt",
+      "november": "Nov",
+      "december": "Dez"
+    },
+    "today": "Heute",
+    "weekHeader": "Wo"
+  },
+  "unit": {
+    "pcs": "Stk.",
+    "m": "m",
+    "h": "Std."
+  }
+}
