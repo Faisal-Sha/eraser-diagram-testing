@@ -1,0 +1,26 @@
+{
+  "pipeFitting": {
+    "1000": "Rohr nahtlos",
+    "1010": "Rohr geschweißt",
+    "2100": "Rohrbogen 3D - 45° - Typ A",
+    "2110": "Rohrbogen 3D - 90° - Typ A",
+    "2600": "Rohrbogen 3D - 45° - Typ B",
+    "2610": "Rohrbogen 3D - 90° - Typ B",
+    "3000": "T-Stück - Typ A",
+    "3010": "T-Stück - Typ B",
+    "3100": "T-Stück reduziert - Typ A",
+    "3110": "T-Stück reduziert - Typ B",
+    "4000": "Reduzierung konzentrisch - Typ B",
+    "4100": "Reduzierung exzentrisch - Typ A",
+    "4110": "Reduzierung exzentrisch - Typ B",
+    "5000": "Kappe - Typ B",
+    "6010": "Blindflansch - Typ 05 - PN10",
+    "6020": "Blindflansch - Typ 05 - PN16",
+    "6030": "Blindflansch - Typ 05 - PN25",
+    "6040": "Blindflansch - Typ 05 - PN40",
+    "7010": "Vorschweißflansch - Typ 11 - PN10",
+    "7020": "Vorschweißflansch - Typ 11 - PN16",
+    "7030": "Vorschweißflansch - Typ 11 - PN25",
+    "7040": "Vorschweißflansch - Typ 11 - PN40"
+  }
+}

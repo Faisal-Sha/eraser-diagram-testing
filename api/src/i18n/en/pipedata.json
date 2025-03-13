@@ -1,0 +1,26 @@
+{
+  "pipeFitting": {
+    "1000": "Seamless pipe",
+    "1010": "Welded pipe",
+    "2100": "Pipe bend 3D - 45° - Type A",
+    "2110": "Pipe bend 3D - 90° - Type A",
+    "2600": "Pipe bend 3D - 45° - Type B",
+    "2610": "Pipe bend 3D - 90° - Type B",
+    "3000": "T-piece - Type A",
+    "3010": "T-piece - Type B",
+    "3100": "Reduced T-piece - Type A",
+    "3110": "Reduced T-piece - Type B",
+    "4000": "Concentric reduction - Type B",
+    "4100": "Eccentric reduction - Typ A",
+    "4110": "Eccentric reduction - Type B",
+    "5000": "Cap - Type B",
+    "6010": "Blind flange - Type 05 - PN10 ",
+    "6020": "Blind flange - Type 05 - PN16",
+    "6030": "Blind flange - Type 05 - PN25",
+    "6040": "Blind flange - Type 05 - PN40",
+    "7010": "Welding neck flange - Type 11 - PN10",
+    "7020": "Welding neck flange - Type 11 - PN16",
+    "7030": "Welding neck flange - Type 11 - PN25",
+    "7040": "Welding neck flange - Type 11 - PN40"
+  }
+}

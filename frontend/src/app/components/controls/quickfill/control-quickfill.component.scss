@@ -1,0 +1,40 @@
+:host ::ng-deep {
+  p-accordion:not(.is-activated) .p-accordion-tab:not(.p-accordion-tab-active) .p-accordion-content {
+    height: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .p-accordion-content {
+    padding: 0;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .p-datatable .p-datatable-thead>tr>th {
+    background-color: transparent;
+  }
+
+  .p-accordion-header-link {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+// :host ::ng-deep .menu-item {
+//   display: block;
+//   padding: 0.75rem 1.25rem;
+//   cursor: pointer;
+// }
+
+:host ::ng-deep .p-button-outlined {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  padding-top: 0.1rem;
+  padding-bottom: 0.1rem;
+}
+
+:host ::ng-deep p-chip {
+  // padding: 0.75rem 1.25rem;
+  cursor: pointer;
+}

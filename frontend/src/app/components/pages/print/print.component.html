@@ -1,0 +1,273 @@
+@if (settings | async; as settings) {
+  <div class="metadata">
+    @if (metadata | async; as metadata) {
+      <div class="projectaddress">
+        <div class="flex row mb-4">
+          <div class="col-8">
+            @if (metadata.address) {
+              <p [innerHTML]="metadata.address.replaceAll('\n', '<br>')"></p>
+            }
+          </div>
+          <div class="col-4">
+            <div class="image">
+              <img
+                class="w-full"
+                [src]="settings.visual.logo || DEFAULT_LOGO"
+                alt="Logo Image"
+                (load)="onImageLoad()"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="projectdetail mt-5 mb-2 pt-5">
+        <div class="flex row">
+          <div class="col-8 py-1">
+            <p class="m-0 font-bold font-2xl">{{ metadata.project }}</p>
+          </div>
+          <div class="col-4 py-1">
+            <p class="m-0 font-bold font-2xl">{{ metadata.author }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-description">
+        <div class="flex row mt-0 mb-4">
+          <div class="col-8 py-0 pr-5">
+            <p class="m-0">{{ metadata.description }}</p>
+          </div>
+          <div class="col-4 py-0 m-0">
+            <p class="m-0 pb-1">
+              {{ "version" | i18next }} : {{ metadata.version }}
+            </p>
+            <p class="m-0">{{ metadata.date | date : "dd.MM.yyyy" }}</p>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div>
+    @if (itemService.rootGroup; as rootGroup) {
+      <ng-container
+        *ngTemplateOutlet="
+          renderGeneralGroup;
+          context: {
+            group: rootGroup,
+            level: 0,
+            showHeader: false,
+            path: ''
+          }
+        "
+      ></ng-container>
+    }
+  </div>
+
+  <ng-template
+    #renderGeneralGroup
+    let-group="group"
+    let-level="level"
+    let-path="path"
+  >
+    <p-table
+      #table
+      [value]="group.items"
+      [expandedRowKeys]="getExpandedItemKeys(group)"
+      dataKey="id"
+    >
+      <ng-template
+        pTemplate="body"
+        let-item
+        let-expanded="expanded"
+        let-rowIndex="rowIndex"
+      >
+        @if (item.contains !== ItemCategory.GROUP) {
+          <tr class="surface-50 cursor-pointer">
+            <td class="surface-200" colspan="3" [ngClass]="rowIndex > 0 ? 'mt-2' : ''">
+              <div class="flex flex-row align-items-center gap-2">
+                <i [class]="ITEM_CATEGORY_TO_ICON[item.contains]"></i>
+                <div class="flex flex-column w-full">
+                  <span class="d-block font-bold text-lg py-2">{{ path ? path + ' / ' : ''}}{{ item.name }}</span>
+                </div>
+              </div>
+            </td>
+            @if (!hidePrices) {
+              <td width="80px" class="text-right surface-200" [ngClass]="rowIndex > 0 ? 'mt-2' : ''">
+                <strong>
+                  {{ (($any(item | getItemAttribute : AttributeName.PRICE_MATERIAL) | number : '1.2-2') ?? '-') + ' ' + settings.currency.symbol }}
+                </strong>
+              </td>
+              @if (settings.calculation.seperateManufacturingAssembly) {
+                <td width="80px" class="text-right surface-200" [ngClass]="rowIndex > 0 ? 'mt-2' : ''">
+                  <strong>
+                    {{ (($any(item | getItemAttribute : AttributeName.PRICE_MANUFACTURING) | number : '1.2-2') ?? '-') + ' ' + settings.currency.symbol }}
+                  </strong>
+                </td>
+                <td width="80px" class="text-right surface-200" [ngClass]="rowIndex > 0 ? 'mt-2' : ''">
+                  <strong>
+                    {{ (($any(item | getItemAttribute : AttributeName.PRICE_ASSEMBLY) | number : '1.2-2') ?? '-') + ' ' + settings.currency.symbol }}
+                  </strong>
+                </td>
+              } @else {
+                <td width="80px" class="text-right surface-200" [ngClass]="rowIndex > 0 ? 'mt-2' : ''">
+                  <strong>
+                    {{ (($any(item | getItemAttribute : AttributeName.PRICE_EFFORD) | number : '1.2-2') ?? '-') + ' ' + settings.currency.symbol }}
+                  </strong>
+                </td>
+              }
+            }
+          </tr>
+        }
+      </ng-template>
+
+      <ng-template pTemplate="rowexpansion" let-item let-rowIndex="rowIndex">
+        @if (item.contains !== ItemCategory.GROUP) {
+          <tr>
+            <td [attr.colspan]="settings.calculation.seperateManufacturingAssembly ? 6 : 5" class="p-0">
+              <ng-container
+                *ngTemplateOutlet="
+                  renderItemGroup;
+                  context: {
+                    group: item,
+                    level: level + 1,
+                    path: (path ? path + ' / ' : '') + item.name
+                  }
+                "
+              ></ng-container>
+            </td>
+          </tr>
+          <tr><td style="height: 32px; border: none;" [attr.colspan]="settings.calculation.seperateManufacturingAssembly ? 6 : 5"></td></tr>
+        } @else {
+          <tr>
+            <td [attr.colspan]="settings.calculation.seperateManufacturingAssembly ? 6 : 5" class="p-0">
+              <ng-container
+                *ngTemplateOutlet="
+                  renderGeneralGroup;
+                  context: {
+                    group: item,
+                    level: level + 1,
+                    showHeader: false,
+                    path: (path ? path + ' / ' : '') + item.name
+                  }
+                "
+              ></ng-container>
+            </td>
+          </tr>
+        }
+      </ng-template>
+      @if (level === 0 && !hidePrices) {
+        <ng-template pTemplate="footer">
+          <tr>
+            <td colspan="2"></td>
+            <td class="text-right">{{ 'pipefittings.result.subtotal' | i18next }}</td>
+            <td class="text-right" width="80px">
+              {{ (($any(group | getItemAttribute : AttributeName.PRICE_MATERIAL) | number : '1.2-2') ?? '-') + ' ' + settings.currency.symbol }}
+            </td>
+            @if (settings.calculation.seperateManufacturingAssembly) {
+              <td class="text-right" width="80px">
+                {{ (($any(group | getItemAttribute : AttributeName.PRICE_MANUFACTURING) | number : '1.2-2') ?? '-') + ' ' + settings.currency.symbol }}
+              </td>
+              <td class="text-right" width="80px">
+                {{ (($any(group | getItemAttribute : AttributeName.PRICE_ASSEMBLY) | number : '1.2-2') ?? '-') + ' ' + settings.currency.symbol }}
+              </td>
+            } @else {
+              <td class="text-right" width="80px">
+                {{ (($any(group | getItemAttribute : AttributeName.PRICE_EFFORD) | number : '1.2-2') ?? '-') + ' ' + settings.currency.symbol }}
+              </td>
+            }
+          </tr>
+          <tr>
+            <td colspan="2"></td>
+            <td class="text-right">{{ 'pipefittings.result.grandtotal' | i18next }}</td>
+            <td [attr.colspan]="settings.calculation.seperateManufacturingAssembly ? 2 : 1"></td>
+            <td class="text-right">
+              {{ (($any(group | getItemAttribute : AttributeName.PRICE_TOTAL) | number : '1.2-2') ?? '-') + ' ' + settings.currency.symbol }}
+            </td>
+          </tr>
+        </ng-template>
+      }
+    </p-table>
+  </ng-template>
+
+  <ng-template
+    #renderItemGroup
+    let-group="group"
+    let-level="level"
+    let-path="path"
+  >
+    @if (getStructureByCategory(group.contains); as itemStructure) {
+      <p-table
+        #table
+        [value]="group.items"
+        dataKey="id"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            @for (itemColumn of itemStructure.columns; track $index) {
+              <th [width]="itemColumn.printWidth ? (itemColumn.printWidth + 'px') : 'auto'" [ngClass]="{ 'text-right': itemColumn.type === 'number'}">
+                {{ itemColumn.i18nTitle | i18next }}
+              </th>
+            }
+            @if (!hidePrices) {
+              <th width="80px" class="text-right">
+                {{ 'pipefittings.column.price.material' | i18next }}
+              </th>
+              @if (itemStructure.manufacturingSplit && settings.calculation.seperateManufacturingAssembly) {
+                <th width="80px" class="text-right">
+                  {{ 'pipefittings.column.price.manufacturing' | i18next }}
+                </th>
+                <th width="80px" class="text-right">
+                  {{ 'pipefittings.column.price.assembly' | i18next }}
+                </th>
+              } @else {
+                <th width="80px" class="text-right">
+                {{ 'pipefittings.column.price.efford' | i18next }}
+                </th>
+              }
+            }
+          </tr>
+        </ng-template>
+        <ng-template
+          pTemplate="body"
+          let-item
+          let-expanded="expanded"
+          let-rowIndex="rowIndex"
+        >
+          <tr class="surface-50 cursor-pointer">
+            @for (itemColumn of itemStructure.columns; track $index) {
+              <td [width]="itemColumn.printWidth ? (itemColumn.printWidth + 'px') : 'auto'">
+                <div class="flex flex-row align-items-center gap-2">
+                  <div class="flex flex-column w-full">
+                    <app-control-calculation-cell
+                      [itemColumn]="itemColumn"
+                      [item]="item"
+                      [model]="($any(itemColumn)?.isAttribute) ? ($any(item) | getItemAttribute : $any(itemColumn.itemKey)) : item[itemColumn.itemKey]"
+                    ></app-control-calculation-cell>
+                  </div>
+                </div>
+              </td>
+            }
+            @if (!hidePrices) {
+              <td width="80px" class="text-right">
+                {{ (($any(item | getItemAttribute : AttributeName.PRICE_MATERIAL) | number : '1.2-2') ?? '-') + ' ' + settings.currency.symbol }}
+              </td>
+              @if (settings.calculation.seperateManufacturingAssembly) {
+                <td width="80px" class="text-right">
+                  {{ (($any(item | getItemAttribute : AttributeName.PRICE_MANUFACTURING) | number : '1.2-2') ?? '-') + ' ' + settings.currency.symbol }}
+                </td>
+                <td width="80px" class="text-right">
+                  {{ (($any(item | getItemAttribute : AttributeName.PRICE_ASSEMBLY) | number : '1.2-2') ?? '-') + ' ' + settings.currency.symbol }}
+                </td>
+              } @else {
+                <td width="80px" class="text-right">
+                  {{ (($any(item | getItemAttribute : AttributeName.PRICE_EFFORD) | number : '1.2-2') ?? '-') + ' ' + settings.currency.symbol }}
+                </td>
+              }
+            }
+          </tr>
+        </ng-template>
+      </p-table>
+    }
+  </ng-template>
+}

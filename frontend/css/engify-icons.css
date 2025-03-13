@@ -1,0 +1,19 @@
+@font-face {
+  font-family: "engify-icons";
+  src: url('engify-icons.eot?t=1717883794317'); /* IE9*/
+  src: url('engify-icons.eot?t=1717883794317#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url("engify-icons.woff2?t=1717883794317") format("woff2"),
+  url("engify-icons.woff?t=1717883794317") format("woff"),
+  url('engify-icons.ttf?t=1717883794317') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+  url('engify-icons.svg?t=1717883794317#engify-icons') format('svg'); /* iOS 4.1- */
+}
+
+.engify-icons {
+  font-family: 'engify-icons' !important;font-size: undefined;
+  font-style:normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+

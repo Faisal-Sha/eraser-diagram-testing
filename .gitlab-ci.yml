@@ -1,0 +1,139 @@
+stages:
+  - build_release_candidate
+  - build_release
+  - build_preview
+  - deploy_preview
+
+variables:
+  HELM_RELEASE_PREFIX: "preview"
+  REVIEW_HOST_DOMAIN: "dev.engify.de"
+  API_IMAGE: "$CI_REGISTRY_IMAGE/api"
+  FRONTEND_IMAGE: "$CI_REGISTRY_IMAGE/frontend"
+
+# 🏗️🚀 Build and Release Candidate Stage
+build_release_candidate:
+  stage: build_release_candidate
+  image: docker:latest
+  script:
+    - |
+      chmod +x scripts/build.sh
+      source ./scripts/build.sh "rc"
+  only:
+    - /^release\/[0-9]+\.[0-9]+$/
+  when: manual
+  interruptible: false
+  resource_group: build_release
+  allow_failure: false
+
+# 🎯 Finales Release (X.Y.0, X.Y.1, …)
+build_release:
+  stage: build_release
+  image: docker:latest
+  script:
+    - |
+      chmod +x scripts/build.sh
+      source ./scripts/build.sh "final"
+  dependencies:
+    - build_release_candidate
+  when: manual
+  only:
+    - /^release\/[0-9]+\.[0-9]+$/
+  interruptible: false
+  resource_group: build_release
+  allow_failure: false
+
+build_preview:
+  stage: build_preview
+  image: docker:latest
+  script:
+    - |
+      URI_ESCAPED_REF_NAME=$(echo ${CI_COMMIT_REF_NAME} | tr '/.' '-' | tr -cd '[:alnum:]-')
+      echo "URI_ESCAPED_REF_NAME=${URI_ESCAPED_REF_NAME}" >> .env
+
+      VERSION_ESCAPED_REF_NAME=$(echo ${CI_COMMIT_REF_NAME} | tr '/' '-' | tr -cd '[:alnum:].-')
+      echo "VERSION_ESCAPED_REF_NAME=${VERSION_ESCAPED_REF_NAME}" >> .env
+
+      VERSION="preview-${VERSION_ESCAPED_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
+      echo "VERSION=${VERSION}" >> .env
+
+      REVIEW_HOST="${URI_ESCAPED_REF_NAME}.${REVIEW_HOST_DOMAIN}"
+      echo "REVIEW_HOST=${REVIEW_HOST}" >> .env
+
+      HELM_RELEASE_NAME="${HELM_RELEASE_PREFIX}-${URI_ESCAPED_REF_NAME}"
+      echo "HELM_RELEASE_NAME=${HELM_RELEASE_NAME}" >> .env
+
+      ENVIRONMENT_NAME="review/${URI_ESCAPED_REF_NAME}"
+      echo "ENVIRONMENT_NAME=${ENVIRONMENT_NAME}" >> .env
+
+      chmod +x scripts/build_preview.sh
+      source ./scripts/build_preview.sh
+  artifacts:
+    reports:
+      dotenv: .env
+  only:
+    - merge_requests
+  allow_failure: false
+
+deploy_preview:
+  stage: deploy_preview
+  image: registry.gitlab.com/gitlab-org/cluster-integration/helm-install-image:helm-3.17.1-kube-1.31.6-alpine-3.21.2
+  variables:
+    KUBE_CONTEXT: "engify/cluster-agent:pipe-calculation-preview-agent"
+    KUBERNETES_SERVICE_ACCOUNT_OVERWRITE: "gitlab-agent-service-account"
+    NAMESPACE: "pipe-calculation-preview"
+  script:
+    - |
+      kubectl config use-context $KUBE_CONTEXT
+      
+      API_NAME="${HELM_RELEASE_NAME}-api"
+      FRONTEND_NAME="${HELM_RELEASE_NAME}-frontend"
+
+      helm dependency update deployment
+
+      helm upgrade "${HELM_RELEASE_NAME}" ./deployment \
+      --namespace "$NAMESPACE" \
+      --install \
+      --wait \
+      --atomic \
+      --cleanup-on-fail \
+      --set api.deployment.image.tag="${VERSION}" \
+      --set api.applicationName="${API_NAME}" \
+      --set api.ingress.hosts[0].host="${REVIEW_HOST}" \
+      --set api.ingress.hosts[0].paths[0].serviceName="${API_NAME}" \
+      --set api.ingress.hosts[0].paths[0].pathType="Prefix" \
+      --set api.ingress.hosts[0].paths[0].path="/api" \
+      --set api.ingress.hosts[0].paths[1].serviceName="${FRONTEND_NAME}" \
+      --set api.ingress.hosts[0].paths[1].pathType="Prefix" \
+      --set api.ingress.hosts[0].paths[1].path="/" \
+      --set api.ingress.tls[0].secretName="dev-wildcard-certificate" \
+      --set api.ingress.tls[0].hosts[0]="${REVIEW_HOST}" \
+      --set api.ingress.annotations."traefik\.ingress\.kubernetes\.io/router\.middlewares"="$NAMESPACE-oauth2-proxy-auth@kubernetescrd" \
+      --set frontend.deployment.image.tag="${VERSION}" \
+      --set frontend.applicationName="${FRONTEND_NAME}" \
+  environment:
+    name: review/${CI_COMMIT_REF_NAME}
+    url: https://engify.de/projekt-kalkulation-preview?e=${URI_ESCAPED_REF_NAME}
+    on_stop: stop_preview
+  dependencies:
+    - build_preview
+  only:
+    - merge_requests
+
+stop_preview:
+  stage: deploy_preview
+  image: registry.gitlab.com/gitlab-org/cluster-integration/helm-install-image:helm-3.17.1-kube-1.31.6-alpine-3.21.2
+  variables:
+    KUBE_CONTEXT: "engify/cluster-agent:pipe-calculation-preview-agent"
+    KUBERNETES_SERVICE_ACCOUNT_OVERWRITE: "gitlab-agent-service-account"
+    NAMESPACE: "pipe-calculation-preview"
+  script:
+    - |
+      echo "🛑 Deleting Helm Release: $HELM_RELEASE_NAME"
+      kubectl config use-context $KUBE_CONTEXT
+      helm uninstall "$HELM_RELEASE_NAME" --namespace "$NAMESPACE"
+  environment:
+    name: review/${CI_COMMIT_REF_NAME}
+    action: stop
+  when: manual
+  only:
+    - merge_requests

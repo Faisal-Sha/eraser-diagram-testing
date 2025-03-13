@@ -1,0 +1,19 @@
+{
+  "formula": {
+    "apply-error-message": "Korrekturfaktor {{name}} konnte nicht angewendet werden. {{message}}",
+    "missing-symbol": "Attribut {{name}} fehlt am Eintrag.",
+    "missing-func": "Funktion {{name}} ist nicht definiert."
+  },
+  "custom-item": {
+    "duplicate-typeid": "Der Eintrag existiert bereits.",
+    "duplicate-specification": "Die Ausprägung wird bereits verwendet.",
+    "required-attribute": "Pflichtfeld",
+    "one-attirbute-required": "Mindestens ein Attribut muss ausgefüllt werden."
+  },
+  "import": {
+    "failed": {
+      "title": "Import fehlgeschlagen",
+      "message": "Der Import ist fehlgeschlagen. Bitte überprüfen Sie die Datei und versuchen Sie es erneut."
+    }
+  }
+}

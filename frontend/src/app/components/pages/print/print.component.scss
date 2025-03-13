@@ -1,0 +1,61 @@
+::ng-deep html {
+    font-size: 10px;
+    padding: 0;
+    margin: 0;
+
+    * {
+        color: #000000 !important;
+    }
+}
+
+:host {
+    display: none;
+}
+
+@media print {
+    :host {
+        display: block;
+    }
+}
+
+@page {
+    size: A4;
+    margin: 1cm 1cm;
+}
+
+@page:first {
+    margin-top: 0.5cm;
+}
+
+:host {
+    width: 100%;
+}
+
+:host ::ng-deep {
+    p-inplace {
+        display: block;
+    }
+    .p-inplace-display {
+        padding: 0;
+
+        > span {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    tfoot:not(.footer) {
+        display: table-row-group;
+    }
+}
+
+th, td {
+    padding: 4px;
+}
+
+.metadata {
+    margin-bottom: 4rem;
+    font-size: 14px;
+}

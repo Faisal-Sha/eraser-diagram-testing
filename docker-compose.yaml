@@ -1,0 +1,33 @@
+version: "3.8"
+services:
+  api:
+    image: node:18
+    working_dir: /app
+    volumes:
+      - ./api:/app/api
+      - ./common:/app/common
+      - nm_api:/app/api/node_modules
+      - nm_common:/app/common/node_modules
+    ports:
+      - "3000:3000"
+      - "9229:9229"  # Debug-Port for VSCode
+    command: sh -c "cd /app/common && npm install && cd /app/api && npm install && npm run start:debug"
+
+  frontend:
+    depends_on:
+      - api
+    image: node:18
+    working_dir: /app
+    volumes:
+      - ./frontend:/app/frontend
+      - ./common:/app/common
+      - nm_frontend:/app/frontend/node_modules
+      - nm_common:/app/common/node_modules
+    ports:
+      - "4200:4200"
+    command: sh -c "cd /app/frontend && npm install && npm start -- --host 0.0.0.0"
+
+volumes:
+  nm_api:
+  nm_common:
+  nm_frontend:

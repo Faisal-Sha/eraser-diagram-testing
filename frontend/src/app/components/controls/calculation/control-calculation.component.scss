@@ -1,0 +1,144 @@
+:host ::ng-deep {
+  .fixed-layout table {
+    table-layout: fixed;
+  }
+
+  p-button.w-full {
+    width: 100%;
+
+    button {
+      width: 100%;
+    }
+  }
+
+  p-button.action-button {
+    display: block;
+    line-height: 24px;
+
+    button.p-button-sm {
+      width: 24px;
+      height: 24px;
+      padding: 0.125rem;
+    }
+  }
+
+  p-button.price-info {
+    display: inline-block;
+    line-height: 14px;
+
+    button.p-button-sm {
+      width: 14px;
+      height: 14px;
+      padding: 0.125rem;
+
+      .p-button-icon {
+        font-size: 0.5rem;
+      }
+    }
+  }
+
+  .p-inplace-content {
+    display: flex;
+    width: 100%;
+
+    input {
+      width: 100%;
+    }
+  }
+
+  .p-inplace-display {
+    display: block;
+    width: 100%;
+  }
+
+  td .p-progress-spinner,
+  td p-progressspinner {
+    width: 20px;
+    height: 20px;
+  }
+
+  tfoot {
+
+    td .p-progress-spinner,
+    td p-progressspinner {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  p-inplace {
+    .p-component {
+      border: none !important;
+      box-shadow: none !important;
+
+      input,
+      .p-inplace-display {
+        box-shadow: none !important;
+      }
+
+      .p-dropdown-trigger {
+        display: none;
+      }
+    }
+  }
+}
+
+
+.slim-table {
+  margin-top: 8px;
+
+  td {
+    padding: 0.5rem 1rem;
+  }
+}
+
+.p-button {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+.add-button {
+  width: 100%;
+  border-radius: 0;
+
+  ::ng-deep button {
+    width: 100%;
+    border-radius: 0;
+  }
+}
+
+.editor {
+  ::ng-deep {
+    .p-component {
+      border: none;
+      outline: none;
+      box-shadow: none;
+      background-color: transparent;
+
+      >.p-element {
+        padding: 0;
+        border-radius: 0;
+        width: 100%;
+      }
+    }
+  }
+}
+
+.border-bottom {
+  >td {
+    border-bottom: 1px solid #c3c3c3;
+  }
+}
+
+.whitespace-no-wrap {
+  white-space: nowrap;
+}
+
+.formula-right-nowrap {
+  white-space: nowrap;
+  margin-left: auto;
+  padding-left: 0.5rem;
+  text-align: right;
+}

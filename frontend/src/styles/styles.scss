@@ -1,0 +1,53 @@
+@import "primeicons/primeicons.css";
+@import "./primeng-sass-theme/themes/lara/lara-light/green/theme.scss";
+@import "primeng/resources/primeng.css";
+@import "primeflex/primeflex.css";
+
+html {
+  font-size: 14px;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  padding: 5px;
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
+  margin: 0;
+  font-family: 'engify-icons', sans-serif;
+}
+
+body,
+body * {
+  font-family: "Roboto", sans-serif;
+}
+
+
+/* FIX Group Style */
+.p-inputgroup>p-inputnumber input.p-inputnumber-input {
+  border-radius: 0;
+  margin: 0;
+}
+
+.p-inputgroup p-inputnumber:last-child input.p-inputnumber-input {
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-left: 0;
+}
+
+.p-inputgroup p-inputnumber:first-child input.p-inputnumber-input {
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-right: 0;
+}
+
+/* FIX Dropdown Sizes */
+p-dropdown .p-dropdown {
+  width: 100%;
+}
+
+.gold-button button {
+  background-color: #c59604;
+  border-color: #c59604;
+}

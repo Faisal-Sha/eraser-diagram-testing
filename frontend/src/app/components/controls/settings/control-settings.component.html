@@ -1,0 +1,26 @@
+<div class="flex flex-row">
+  <ul class="navigation text-xl">
+    @for (tab of tabs; track $index) {
+      @if(tab.i18nLabel === 'tabs.override-items') {
+        <li class="pb-2">{{ 'tabs.items-title' | i18next }}</li>
+        <li class="pb-2 pl-2">
+          <a href="javascript:void(0);" [class]="activeTab === $index ? 'active ' : ''" (click)="activateTab($event, $index)">{{ tab.i18nLabel| i18next }}</a>
+        </li>
+      } 
+      @else if (tab.i18nLabel === 'tabs.add-items') {
+        <li class="pl-2">
+          <a href="javascript:void(0);" [class]="activeTab === $index ? 'active ' : ''" (click)="activateTab($event, $index)">{{ tab.i18nLabel| i18next }}</a>
+        </li>
+      }
+      @else {
+        <li>
+          <a href="javascript:void(0);" [class]="activeTab === $index ? 'active ' : ''" (click)="activateTab($event, $index)">{{ tab.i18nLabel| i18next }}</a>
+        </li>
+      }
+    }
+  </ul>
+
+  <div class="flex-auto content">
+    <ng-container *ngComponentOutlet="tabs[activeTab].component"></ng-container>
+  </div>
+</div>

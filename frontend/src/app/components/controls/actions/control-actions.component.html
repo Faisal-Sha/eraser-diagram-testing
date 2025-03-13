@@ -1,0 +1,136 @@
+<p-menu
+  #newItemMenu
+  [model]="newItems"
+  styleClass="w-full md:w-15rem"
+  [popup]="true"
+>
+  <ng-template pTemplate="submenuheader" let-item>
+    <span class="text-primary font-bold">{{ item.label }}</span>
+  </ng-template>
+  <ng-template pTemplate="item" let-item>
+    <a pRipple class="flex align-items-center p-menuitem-link">
+      <span [class]="item.icon"></span>
+      <span class="ml-2">{{ item.label }}</span>
+      @if (item.shortcut) {
+        <span class="ml-auto border-1 surface-border border-round surface-100 text-xs p-1" >
+          {{ item.shortcut }}
+        </span>
+      }
+    </a>
+  </ng-template>
+</p-menu>
+
+<div class="flex flex-row w-full justify-content-between">
+  <div class="flex flex-row w-full gap-2 justify-content-start">
+    <p-button
+      severity="primary"
+      [raised]="true"
+      size="small"
+      icon="pi pi-plus-circle"
+      [label]="'button.add' | i18next"
+      (onClick)="newItemMenu.toggle($event)"
+    >
+    </p-button>
+    <p-button
+      severity="primary"
+      [raised]="true"
+      size="small"
+      icon="pi pi-plus-circle"
+      [label]="'button.quickmto' | i18next"
+      (onClick)="quickfillService.showDialog()"
+    >
+    </p-button>
+  </div>
+  <div class="flex flex-row w-full gap-2 justify-content-end">
+    <input
+      #jsonFileInput
+      type="file"
+      (change)="parseFile($event)"
+      style="display: none"
+      accept=".json"
+    />
+    <input
+      #csvFileInput
+      type="file"
+      (change)="parseFile($event)"
+      style="display: none"
+      accept=".csv"
+    />
+    <p-menu #exportMenu [model]="exportMenuItems" [popup]="true">
+      <ng-template pTemplate="item" let-item>
+        <span class="menu-item" [innerHTML]="item.label"></span>
+      </ng-template>
+    </p-menu>
+    <p-menu #importMenu [model]="importMenuItems" [popup]="true">
+      <ng-template pTemplate="item" let-item>
+        <span class="menu-item" [innerHTML]="item.label"></span>
+      </ng-template>
+    </p-menu>
+    <p-menu #printMenu [model]="printMenuItems" [popup]="true">
+      <ng-template pTemplate="item" let-item>
+        <span class="menu-item" [innerHTML]="item.label"></span>
+      </ng-template>
+    </p-menu>
+
+    <p-button
+      [severity]="(unitPriceService.isUnitPriceViewActive) ? 'primary' : 'secondary'"
+      [raised]="true"
+      size="small"
+      [icon]="(unitPriceService.isUnitPriceViewActive) ? 'pi pi-arrow-down-left-and-arrow-up-right-to-center' : 'pi pi-arrow-up-right-and-arrow-down-left-from-center'"
+      (click)="unitPriceService.toggleUnitPriceView()"
+      [pTooltip]="((unitPriceService.isUnitPriceViewActive) ? 'tooltip.activated-unit-price-view-button' : 'tooltip.deactivated-unit-price-view-button') | i18next"
+      tooltipPosition="top"
+    ></p-button>
+
+    <p-button
+      severity="secondary"
+      [raised]="true"
+      size="small"
+      icon="pi pi-cog"
+      (click)="settingsService.showEditDialog()"
+      [pTooltip]="'tooltip.settings' | i18next"
+      tooltipPosition="top"
+    ></p-button>
+
+    <p-button
+      severity="secondary"
+      [raised]="true"
+      size="small"
+      icon="pi pi-file-import"
+      (click)="importMenu.toggle($event)"
+      tooltipPosition="top"
+      [pTooltip]="'tooltip.import' | i18next"
+    ></p-button>
+
+    <p-button
+      severity="secondary"
+      [raised]="true"
+      size="small"
+      icon="pi pi-save"
+      (click)="exportMenu.toggle($event)"
+      tooltipPosition="top"
+      [pTooltip]="'tooltip.export' | i18next"
+    ></p-button>
+
+    <p-button
+      severity="secondary"
+      [raised]="true"
+      size="small"
+      icon="pi pi-print"
+      (click)="printMenu.toggle($event)"
+      tooltipPosition="top"
+      [pTooltip]="'tooltip.print' | i18next"
+    ></p-button>
+
+    <p-button
+      severity="danger"
+      [raised]="true"
+      size="small"
+      icon="pi pi-trash"
+      (click)="confirmReset($event)"
+      [pTooltip]="'tooltip.reset' | i18next"
+      tooltipPosition="top"
+    >
+    </p-button>
+  </div>
+</div>

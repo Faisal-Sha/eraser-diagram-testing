@@ -1,0 +1,9 @@
+.icon-questionmark {
+    font-size: 20px;
+}
+
+:host ::ng-deep .menu-item {
+    display: block;
+    padding: 0.75rem 1.25rem;
+    cursor: pointer;
+}

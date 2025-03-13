@@ -1,0 +1,60 @@
+<p-accordion #helpAccordion class="info-panel mb-3 block" [ngClass]="{ 'is-activated': helpAccordionActivated }"
+  (activeIndexChange)="helpAccordionActivated = true">
+  <p-accordionTab>
+    <ng-template pTemplate="header">
+      <span>{{ 'header' | i18next }}</span>&nbsp;
+      <span>{{ metadata.project }}</span>
+    </ng-template>
+    <div class="grid">
+      <div class="flex col-6 mt-4">
+        <span class="p-float-label w-full mb-2">
+          <textarea id="float-input" class="h-full w-full" [(ngModel)]="metadata.address"
+            (ngModelChange)="updateMetadata()" pInputTextarea></textarea>
+          <label for="float-input">{{ 'input.address' | i18next }}</label>
+        </span>
+      </div>
+
+      <div class="col-6">
+        <div class="grid">
+          <div class="col-12 mt-4">
+            <span class="p-float-label">
+              <input class="w-full" pInputText id="author" [(ngModel)]="metadata.author"
+                (ngModelChange)="updateMetadata()" />
+              <label htmlFor="author">{{ 'input.author' | i18next }}</label>
+            </span>
+          </div>
+          <div class="col-6 mt-4">
+            <span class="p-float-label">
+              <p-calendar [(ngModel)]="metadata.date" (ngModelChange)="updateMetadata()" dateFormat="dd.mm.yy"
+                [showIcon]="true" class="p-component"></p-calendar>
+              <label htmlFor="date">{{ 'input.date' | i18next }}</label>
+            </span>
+          </div>
+          <div class="col-6 mt-4">
+            <span class="p-float-label">
+              <input class="w-full" pInputText id="version" [(ngModel)]="metadata.version"
+                (ngModelChange)="updateMetadata()" />
+              <label htmlFor="version">{{ 'input.version' | i18next }}</label>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 mt-4">
+        <span class="p-float-label">
+          <input class="w-full" pInputText id="project" [(ngModel)]="metadata.project"
+            (ngModelChange)="updateMetadata()" />
+          <label htmlFor="project">{{ 'input.project' | i18next }}</label>
+        </span>
+      </div>
+
+      <div class="col-12 mt-4">
+        <span class="p-float-label">
+          <textarea id="float-input" class="w-full h-5rem" [(ngModel)]="metadata.description"
+            (ngModelChange)="updateMetadata()" rows="1" cols="40" pInputTextarea></textarea>
+          <label for="float-input">{{ 'input.description' | i18next }}</label>
+        </span>
+      </div>
+    </div>
+  </p-accordionTab>
+</p-accordion>

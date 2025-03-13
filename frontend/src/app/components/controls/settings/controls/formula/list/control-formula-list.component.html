@@ -1,0 +1,48 @@
+@if (formulas$ | async; as formulas) {
+  <p-table
+    [value]="formulas"
+    [scrollable]="true" 
+    [virtualScroll]="true"
+    [virtualScrollItemSize]="64"
+    scrollHeight="flex"
+    class="flex-auto"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th class="w-full" colspan="2">
+          <div class="w-full flex align-items-center">
+            {{ 'table-title' | i18next}}
+            <i class="ml-2 pi pi-info-circle" [pTooltip]="'tooltip.info' | i18next"></i>
+          </div>
+        </th>
+        <th class="w-full" colspan="1">
+          <div class="w-full flex align-items-center justify-content-end">
+            <p-button [label]="'button.add' | i18next" size="small" severity="primary" [icon]="'pi pi-plus-circle'" (click)="formulaService.showCreateDialog()"></p-button>
+          </div>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-formula let-rowIndex="rowIndex">
+      <tr [pReorderableRow]="rowIndex">
+        <td><i class="pi pi-bars drag-handle" pReorderableRowHandle></i></td>
+        <td class="w-full">{{ formula.name }}</td>
+        <td class="flex flex-row align-items-center justify-content-end gap-2">
+          <p-inputSwitch [pTooltip]="formula.active ? ('tooltip.deactivate' | i18next) : ('tooltip.activate' | i18next)"
+            tooltipPosition="top" [ngModel]="formula.active" (ngModelChange)="toggleActive(formula)"></p-inputSwitch>
+          <p-button size="small" severity="secondary" (click)="formulaService.showEditDialog(formula);"
+            [pTooltip]="'tooltip.edit' | i18next" tooltipPosition="top">
+            <i class="pi pi-pencil"></i>
+          </p-button>
+          <p-button size="small" severity="secondary" (click)="this.duplicate(formula);"
+            [pTooltip]="'tooltip.duplicate' | i18next" tooltipPosition="top">
+            <i class="pi pi-copy"></i>
+          </p-button>
+          <p-button size="small" severity="danger" (click)="this.confirmRemoveFormula($event, formula)"
+            [pTooltip]="'tooltip.remove' | i18next" tooltipPosition="top">
+            <i class="pi pi-times-circle"></i>
+          </p-button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+}

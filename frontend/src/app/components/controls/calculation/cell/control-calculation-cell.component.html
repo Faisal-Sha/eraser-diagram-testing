@@ -1,0 +1,69 @@
+<!-- Editor Renderers -->
+<ng-template #editorRenderer let-itemColumn="itemColumn" let-item="item">
+  <div class="w-full">
+    @switch (itemColumn.editorRenderer.type) {
+        @case ("input") {
+            <ng-container *ngTemplateOutlet="editorRendererInput; context: { itemColumn: itemColumn, item: item }"></ng-container>
+        }
+        @case ("suggestion") {
+            <ng-container *ngTemplateOutlet="editorRendererSuggestion; context: { itemColumn: itemColumn, item: item }"></ng-container>
+        }
+    }
+  </div>
+</ng-template>
+
+<ng-template #editorRendererInput let-itemColumn="itemColumn" let-item="item">
+  @switch (itemColumn.editorRenderer.inputType) {
+      @case ("text") {
+          <p-inputText #input [(ngModel)]="model" (blur)="deactivate()" (keyup.enter)="deactivate()"></p-inputText>
+      }
+      @case ("number") {
+          <p-inputNumber #input mode="decimal" [minFractionDigits]="itemColumn.editorRenderer.minDecimals" [maxFractionDigits]="itemColumn.editorRenderer.maxDecimals" [useGrouping]="itemColumn.editorRenderer.grouping" [(ngModel)]="model" (onBlur)="deactivate()" (keyup.enter)="deactivate()"></p-inputNumber>
+      }
+  }
+</ng-template>
+
+<ng-template #editorRendererSuggestion let-itemColumn="itemColumn" let-item="item">
+  <!-- Virtual Scroll is not Working at the moment -->
+  <p-dropdown 
+    #input
+    [options]="suggestions?.options ?? []"
+    [group]="suggestions?.grouped ?? false"
+    [(ngModel)]="model"
+    optionLabel="label"
+    optionValue="value"
+    [filter]="true"
+    filterBy="label" 
+    appendTo="body"
+    (ngModelChange)="deactivate()"
+    (onHide)="deactivate()"
+    [placeholder]="itemColumn.i18nPlaceholder ? (itemColumn.i18nPlaceholder | i18next) : ''"
+    [virtualScroll]="false"
+    [virtualScrollItemSize]="38"
+    scrollHeight="190px"
+    [ngClass]="{'text-right' : itemColumn.type === 'number'}"
+  >
+    <ng-template let-option pTemplate="item">
+      <span class="dropdown-item">{{ option.label }}</span>
+    </ng-template>
+
+    <ng-template let-group pTemplate="group">
+      <span class="dropdown-item">{{ group.label }}</span>
+    </ng-template>
+  </p-dropdown>
+</ng-template>
+
+@if (isItemColumnAvailable() || $any(itemColumn).printOnly) {
+  <p-inplace #inplaceEditor (onActivate)="activate()">
+    <ng-template pTemplate="display">
+      @if (hasValue) {
+        <span class="block whitespace-no-wrap	overflow-hidden text-overflow-ellipsis" [ngClass]="{'text-right' : itemColumn.type === 'number'}">{{ displayText }}</span>
+      } @else {
+        <span class="block text-400 whitespace-no-wrap	overflow-hidden text-overflow-ellipsis" [ngClass]="{'text-right' : itemColumn.type === 'number'}">{{ itemColumn.i18nPlaceholder ? (itemColumn.i18nPlaceholder | i18next) : '' }}</span>
+      }
+    </ng-template>
+    <ng-template pTemplate="content">
+      <ng-container *ngTemplateOutlet="editorRenderer; context: { itemColumn: itemColumn, item: item }"></ng-container>
+    </ng-template>
+  </p-inplace>
+}
